@@ -1,46 +1,55 @@
-import { Link } from "react-router-dom";
-import { Dumbbell } from "lucide-react";
-import { Button } from "../ui/Button";
-import { useAuth } from "../../context/AuthContext";
-import { UserButton } from "@neondatabase/neon-js/auth/react";
-export default function Navbar() {
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { authClient } from '../../lib/auth';
+import { Button } from '../ui/Button';
+import { Dumbbell, User, LogOut } from 'lucide-react';
+
+const Navbar = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await authClient.signOut();
+    navigate('/auth');
+  };
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-[var(--color-border)] bg-[var(--color-background)]/80 backdrop-blur-md">
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link
-          to="/"
-          className="flex items-center gap-2 text-[var(--color-foreground)]"
-        >
-          <Dumbbell className="w-6 h-6 text-[var(--color-accent)]" />
-          <span className="text-lg font-semibold">GymAI</span>
+    <nav className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+        <Link to="/" className="flex items-center space-x-2">
+          <Dumbbell className="h-6 w-6 text-accent" />
+          <span className="text-xl font-bold tracking-tight">GymAI</span>
         </Link>
-        <nav>
+
+        <div className="flex items-center space-x-4">
           {user ? (
             <>
               <Link to="/profile">
-                <Button variant="ghost" size="sm">
-                  My Plan
+                <Button variant="primary" size="sm" className="flex items-center space-x-2">
+                  <User className="h-4 w-4" />
+                  <span className="hidden sm:inline">Profile</span>
                 </Button>
               </Link>
-              <UserButton className="bg-accent" />
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleSignOut}
+                className="flex items-center space-x-2"
+              >
+                <LogOut className="h-4 w-4" />
+                <span className="hidden sm:inline">Logout</span>
+              </Button>
             </>
           ) : (
-            <>
-              <Link to="/auth/sign-in">
-                <Button variant="ghost" size="sm">
-                  Sign In
-                </Button>
-              </Link>
-              <Link to="/auth/sign-up">
-                <Button variant="primary" size="sm">
-                  Sign Up
-                </Button>
-              </Link>
-            </>
+            <Link to="/auth">
+              <Button size="sm">Get Started</Button>
+            </Link>
           )}
-        </nav>
+        </div>
       </div>
-    </header>
+    </nav>
   );
-}
+};
+
+export default Navbar;
+

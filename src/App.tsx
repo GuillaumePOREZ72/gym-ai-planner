@@ -12,7 +12,6 @@ import { AuthProvider } from "./context/AuthContext"
 
 function App() {
 
-
   return (
     <NeonAuthUIProvider authClient={authClient} defaultTheme="dark">
       <AuthProvider>
