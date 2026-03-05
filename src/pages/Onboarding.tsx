@@ -1,5 +1,7 @@
 import { RedirectToSignIn, SignedIn } from "@neondatabase/neon-js/auth/react";
 import { useAuth } from "../context/AuthContext";
+import { Card } from "../components/ui/Card";
+import { Select } from "../components/ui/Select";
 
 const goalOptions = [
   { value: "bulk", label: "Build Muscle (Bulk)" },
@@ -48,6 +50,19 @@ const splitOptions = [
 
 export default function Onboarding() {
   const { user } = useAuth();
+  const [formData, setFormData] = useState({
+    goal: "bulk",
+    experience: "intermediate",
+    daysPerWeek: "4",
+    sessionLength: "60",
+    equipment: "full_gym",
+    injuries: "",
+    preferredSplit: "upper_lower",
+  });
+
+  function updateForm(field: string, value: string) {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  }
 
   if (!user) {
     return <RedirectToSignIn />;
@@ -58,7 +73,66 @@ export default function Onboarding() {
         <div className="max-w-xl mx-auto">
           {/* Progress Indicator*/}
 
-          {/* Step 1: Questionnaire}
+          {/* Step 1: Questionnaire*/}
+          <Card variant="default">
+            <h1 className="text-2xl font-bold mb-2">Let's get to know you</h1>
+            <p className="text-[var(--color-muted)] mb-6">
+              Help us create the perfect plan for you.
+            </p>
+            <form className="space-y-5">
+              <Select
+                id="goal"
+                label="What's your primary goal?"
+                options={goalOptions}
+                value={formData.goal}
+                onChange={(e) => updateForm("goal", e.target.value)}
+              />
+              <Select
+                id="experience"
+                label="How experienced are you?"
+                options={experienceOptions}
+                value={formData.experience}
+                onChange={(e) => updateForm("experience", e.target.value)}
+              />
+              <div className="grid grid-cols-2 gap-4">
+                <Select
+                  id="daysPerWeek"
+                  label="How many days per week can you train?"
+                  options={daysOptions}
+                  value={formData.daysPerWeek}
+                  onChange={(e) => updateForm("daysPerWeek", e.target.value)}
+                />
+                <Select
+                  id="sessionLength"
+                  label="How long do you want your sessions to be?"
+                  options={sessionOptions}
+                  value={formData.sessionLength}
+                  onChange={(e) => updateForm("sessionLength", e.target.value)}
+                />
+              </div>
+              <Select
+                id="equipment"
+                label="What equipment do you have access to?"
+                options={equipmentOptions}
+                value={formData.equipment}
+                onChange={(e) => updateForm("equipment", e.target.value)}
+              />
+              <Select
+                id="injuries"
+                label="Do you have any injuries?"
+                options={injuriesOptions}
+                value={formData.injuries}
+                onChange={(e) => updateForm("injuries", e.target.value)}
+              />
+              <Select
+                id="preferredSplit"
+                label="What split do you prefer?"
+                options={splitOptions}
+                value={formData.preferredSplit}
+                onChange={(e) => updateForm("preferredSplit", e.target.value)}
+              />
+            </form>
+          </Card>
 
           {/* Step 2: Generate AI Plan*/}
         </div>

@@ -1,17 +1,11 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import { authClient } from '../../lib/auth';
-import { Button } from '../ui/Button';
-import { Dumbbell, User, LogOut } from 'lucide-react';
+import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { Button } from "../ui/Button";
+import { Dumbbell } from "lucide-react";
+import { UserButton } from "@neondatabase/neon-js/auth/react";
 
 const Navbar = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
-
-  const handleSignOut = async () => {
-    await authClient.signOut();
-    navigate('/auth');
-  };
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
@@ -25,25 +19,23 @@ const Navbar = () => {
           {user ? (
             <>
               <Link to="/profile">
-                <Button variant="primary" size="sm" className="flex items-center space-x-2">
-                  <User className="h-4 w-4" />
-                  <span className="hidden sm:inline">Profile</span>
+                <Button variant="ghost" size="sm">
+                  My Plan
                 </Button>
               </Link>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleSignOut}
-                className="flex items-center space-x-2"
-              >
-                <LogOut className="h-4 w-4" />
-                <span className="hidden sm:inline">Logout</span>
-              </Button>
+              <UserButton className="bg-(--color-accent)" />
             </>
           ) : (
-            <Link to="/auth">
-              <Button size="sm">Get Started</Button>
-            </Link>
+            <>
+              <Link to="/auth/sign-in">
+                <Button variant="ghost" size="sm">
+                  Sign In
+                </Button>
+              </Link>
+              <Link to="/auth/sign-up">
+                <Button size="sm">Sign Up</Button>
+              </Link>
+            </>
           )}
         </div>
       </div>
@@ -52,4 +44,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-

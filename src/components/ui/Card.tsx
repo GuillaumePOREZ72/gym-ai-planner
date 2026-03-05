@@ -1,15 +1,27 @@
 import React from 'react';
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  children: React.ReactNode;
+  variant?: 'default' | 'outline' | 'accent' | 'ghost';
+  isHoverable?: boolean;
 }
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className = '', children, ...props }, ref) => {
+  ({ className = '', variant = 'default', isHoverable = false, children, ...props }, ref) => {
+    const variants = {
+      default: 'bg-card border-border',
+      outline: 'bg-transparent border-border',
+      accent: 'bg-card border-accent/20 shadow-[0_0_15px_rgba(163,230,53,0.05)]',
+      ghost: 'bg-transparent border-transparent shadow-none',
+    };
+
+    const hoverStyles = isHoverable 
+      ? 'transition-all duration-200 hover:border-accent/40 hover:shadow-md cursor-pointer' 
+      : '';
+
     return (
       <div
         ref={ref}
-        className={`rounded-lg border border-border bg-card text-foreground shadow-sm ${className}`}
+        className={`rounded-xl border ${variants[variant]} ${hoverStyles} ${className}`}
         {...props}
       >
         {children}
