@@ -1,7 +1,12 @@
+import { useState } from "react";
 import { RedirectToSignIn, SignedIn } from "@neondatabase/neon-js/auth/react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Card } from "../components/ui/Card";
 import { Select } from "../components/ui/Select";
+import { Button } from "../components/ui/Button";
+import { Textarea } from "../components/ui/Textarea";
+import { saveProfile, generatePlan } from "../lib/api";
 
 const goalOptions = [
   { value: "bulk", label: "Build Muscle (Bulk)" },
@@ -48,8 +53,21 @@ const splitOptions = [
   { value: "legs_arms", label: "Legs/Arms" },
 ];
 
+const injuriesOptions = [
+  { value: "", label: "None" },
+  { value: "knee", label: "Knee pain" },
+  { value: "back", label: "Lower back pain" },
+  { value: "shoulder", label: "Shoulder issues" },
+  { value: "wrist", label: "Wrist pain" },
+  { value: "hip", label: "Hip pain" },
+  { value: "ankle", label: "Ankle issues" },
+];
+
 export default function Onboarding() {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     goal: "bulk",
     experience: "intermediate",
@@ -64,6 +82,21 @@ export default function Onboarding() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   }
 
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setIsSubmitting(true);
+    try {
+      await saveProfile(formData);
+      await generatePlan();
+      navigate("/profile");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   if (!user) {
     return <RedirectToSignIn />;
   }
@@ -74,12 +107,12 @@ export default function Onboarding() {
           {/* Progress Indicator*/}
 
           {/* Step 1: Questionnaire*/}
-          <Card variant="default">
+          <Card variant="default" className="p-6">
             <h1 className="text-2xl font-bold mb-2">Let's get to know you</h1>
             <p className="text-[var(--color-muted)] mb-6">
               Help us create the perfect plan for you.
             </p>
-            <form className="space-y-5">
+            <form className="space-y-5" onSubmit={handleSubmit}>
               <Select
                 id="goal"
                 label="What's your primary goal?"
@@ -118,19 +151,42 @@ export default function Onboarding() {
                 onChange={(e) => updateForm("equipment", e.target.value)}
               />
               <Select
-                id="injuries"
-                label="Do you have any injuries?"
-                options={injuriesOptions}
-                value={formData.injuries}
-                onChange={(e) => updateForm("injuries", e.target.value)}
-              />
-              <Select
                 id="preferredSplit"
                 label="What split do you prefer?"
                 options={splitOptions}
                 value={formData.preferredSplit}
                 onChange={(e) => updateForm("preferredSplit", e.target.value)}
               />
+              <Select
+                id="injuries"
+                label="Do you have any injuries or limitations?"
+                options={injuriesOptions}
+                value={formData.injuries}
+                onChange={(e) => updateForm("injuries", e.target.value)}
+              />
+              {formData.injuries && (
+                <Textarea
+                  id="injuriesDetail"
+                  label="Describe your injury (optional)"
+                  placeholder="e.g. right knee pain when squatting"
+                  value={formData.injuries}
+                  onChange={(e) => updateForm("injuries", e.target.value)}
+                />
+              )}
+              {error && (
+                <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-md px-3 py-2">
+                  {error}
+                </p>
+              )}
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                isLoading={isSubmitting}
+                className="w-full"
+              >
+                {isSubmitting ? "Generating your plan…" : "Generate My Plan"}
+              </Button>
             </form>
           </Card>
 

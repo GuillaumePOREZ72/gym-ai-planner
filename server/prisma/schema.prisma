@@ -1,0 +1,32 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model UserProfiles {
+  userId         String   @id @db.Uuid
+  goal           String   @db.VarChar(20)
+  experience     String   @db.VarChar(20)
+  daysPerWeek    Int
+  sessionLength  Int
+  equipment      String   @db.VarChar(20)
+  preferredSplit String   @db.VarChar(20)
+  injuries       String?  @db.Text
+  updatedAt      DateTime @default(now()) @updatedAt @db.Timestamp(6)
+}
+
+model TrainingPlans {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  planJson  Json
+  planText  String   @db.Text
+  version   Int      @default(1)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+
+  @@index([userId])
+}
