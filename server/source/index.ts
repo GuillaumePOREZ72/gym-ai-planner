@@ -21,7 +21,7 @@ app.use(async (req, _res, next) => {
     return;
   }
   try {
-    const response = await fetch(`${NEON_AUTH_URL}/api/auth/get-session`, {
+    const response = await fetch(`${NEON_AUTH_URL}/get-session`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (response.ok) {
