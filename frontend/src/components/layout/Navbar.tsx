@@ -23,7 +23,7 @@ const Navbar = () => {
                   My Plan
                 </Button>
               </Link>
-              <UserButton className="bg-(--color-accent)" />
+              <UserButton size="icon" className="bg-(--color-accent)" />
             </>
           ) : (
             <>
