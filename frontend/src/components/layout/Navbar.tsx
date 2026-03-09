@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { Button } from "../ui/Button";
 import { Dumbbell } from "lucide-react";
-import { UserButton } from "@neondatabase/neon-js/auth/react";
+import { Avatar } from "../ui/Avatar";
 
 const Navbar = () => {
   const { user } = useAuth();
@@ -23,7 +23,9 @@ const Navbar = () => {
                   My Plan
                 </Button>
               </Link>
-              <UserButton size="icon" className="bg-(--color-accent)" />
+              <Link to="/account">
+                <Avatar seed={user.id} size={36} />
+              </Link>
             </>
           ) : (
             <>
