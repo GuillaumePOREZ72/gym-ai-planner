@@ -26,7 +26,7 @@ const Navbar = () => {
               <Link
                 to="/account"
                 aria-label="Account settings"
-                className="rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-accent)"
+                className="rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-accent)]"
               >
                 <Avatar seed={user.id} size={36} />
               </Link>

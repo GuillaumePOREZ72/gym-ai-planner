@@ -39,7 +39,7 @@ export default function Profile() {
     <div className="min-h-screen pt-24 pb-12 px-6">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center gap-4 mb-10">
-          <Avatar seed={user.id} size={80} />
+          <Avatar seed={user.id} size={80} label={user.email} />
           <div>
             <p className="text-lg font-semibold text-[var(--color-foreground)]">{user.email}</p>
             <p className="text-sm text-[var(--color-muted)]">Member since {memberSince}</p>
