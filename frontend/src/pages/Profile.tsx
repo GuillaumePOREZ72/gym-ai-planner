@@ -3,6 +3,7 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { PlanDisplay } from "../components/plan/PlanDisplay";
 import { generatePlan } from "../lib/api";
+import { Avatar } from "../components/ui/Avatar";
 
 export default function Profile() {
   const { user, profile, plan, isLoading, refreshData } = useAuth();
@@ -32,6 +33,13 @@ export default function Profile() {
   return (
     <div className="min-h-screen pt-24 pb-12 px-6">
       <div className="max-w-4xl mx-auto">
+        <div className="flex items-center gap-4 mb-10">
+          <Avatar seed={user.id} size={80} />
+          <div>
+            <p className="text-lg font-semibold text-(--color-foreground)">{user.email}</p>
+            <p className="text-sm text-(--color-muted)">Member since {new Date(user.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })}</p>
+          </div>
+        </div>
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-[var(--color-foreground)]">Your Training Plan</h1>
           <p className="text-[var(--color-muted)] mt-1 text-sm">
