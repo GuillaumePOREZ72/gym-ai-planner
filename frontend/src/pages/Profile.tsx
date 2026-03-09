@@ -30,14 +30,19 @@ export default function Profile() {
     }
   }
 
+  const memberSince = (() => {
+    const d = new Date(user.createdAt);
+    return isNaN(d.getTime()) ? "—" : d.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+  })();
+
   return (
     <div className="min-h-screen pt-24 pb-12 px-6">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center gap-4 mb-10">
           <Avatar seed={user.id} size={80} />
           <div>
-            <p className="text-lg font-semibold text-(--color-foreground)">{user.email}</p>
-            <p className="text-sm text-(--color-muted)">Member since {new Date(user.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })}</p>
+            <p className="text-lg font-semibold text-[var(--color-foreground)]">{user.email}</p>
+            <p className="text-sm text-[var(--color-muted)]">Member since {memberSince}</p>
           </div>
         </div>
         <div className="mb-8">
