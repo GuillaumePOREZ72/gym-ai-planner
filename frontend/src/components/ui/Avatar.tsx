@@ -5,9 +5,9 @@ interface AvatarProps {
 }
 
 export function Avatar({ seed, size = 40, className = "" }: AvatarProps) {
-  const url = `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(seed)}&backgroundColor=b6e3f4,c0aede,d1d4f9`;
-
-  const initials = seed.slice(0, 2).toUpperCase();
+  const safeSeed = seed.trim() || "?";
+  const url = `https://api.dicebear.com/9.x/avataaars/svg?seed=${encodeURIComponent(safeSeed)}&backgroundColor=b6e3f4,c0aede,d1d4f9`;
+  const initials = safeSeed.slice(0, 2).toUpperCase();
 
   return (
     <div
@@ -16,17 +16,21 @@ export function Avatar({ seed, size = 40, className = "" }: AvatarProps) {
     >
       <img
         src={url}
-        alt="avatar"
+        alt=""
         width={size}
         height={size}
+        loading="lazy"
         className="h-full w-full object-cover"
         onError={(e) => {
           (e.currentTarget as HTMLImageElement).style.display = "none";
-          (e.currentTarget.nextElementSibling as HTMLElement | null)?.style.setProperty("display", "flex");
+          const fallback = e.currentTarget.nextElementSibling as HTMLElement | null;
+          fallback?.style.setProperty("display", "flex");
+          fallback?.removeAttribute("aria-hidden");
         }}
       />
       <span
-        className="absolute inset-0 hidden items-center justify-center text-xs font-semibold text-(--color-foreground)"
+        className="absolute inset-0 hidden items-center justify-center font-semibold text-(--color-foreground)"
+        style={{ fontSize: size * 0.3 }}
         aria-hidden="true"
       >
         {initials}
