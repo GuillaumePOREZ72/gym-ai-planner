@@ -23,7 +23,11 @@ const Navbar = () => {
                   My Plan
                 </Button>
               </Link>
-              <Link to="/account">
+              <Link
+                to="/account"
+                aria-label="Account settings"
+                className="rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--color-accent)"
+              >
                 <Avatar seed={user.id} size={36} />
               </Link>
             </>
