@@ -83,7 +83,7 @@ ${p.injuries ? "- Include an 'alternatives' array for exercises that may aggrava
 `.trim();
 
   const response = await client.chat.completions.create({
-    model: "nvidia/llama-3.1-nemotron-nano-8b-instruct:free",
+    model: "liquid/lfm-2.5-1.2b-instruct:free",
     messages: [
       {
         role: "system",

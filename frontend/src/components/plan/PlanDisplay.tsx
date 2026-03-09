@@ -11,7 +11,12 @@ interface PlanDisplayProps {
   onRegenerate?: () => void;
 }
 
-export function PlanDisplay({ plan, hasInjuries, isRegenerating = false, onRegenerate }: PlanDisplayProps) {
+export function PlanDisplay({
+  plan,
+  hasInjuries,
+  isRegenerating = false,
+  onRegenerate,
+}: PlanDisplayProps) {
   const { overview, weeklySchedule, progression } = plan.planJson;
 
   return (
@@ -22,7 +27,9 @@ export function PlanDisplay({ plan, hasInjuries, isRegenerating = false, onRegen
           <p className="text-xs text-[var(--color-muted)] uppercase tracking-wider mb-1">
             Training Plan · v{plan.version}
           </p>
-          <p className="text-[var(--color-muted)] text-sm max-w-xl">{overview}</p>
+          <p className="text-[var(--color-muted)] text-sm max-w-xl">
+            {overview}
+          </p>
         </div>
         {onRegenerate && (
           <Button
@@ -43,26 +50,30 @@ export function PlanDisplay({ plan, hasInjuries, isRegenerating = false, onRegen
       </div>
 
       {/* Weekly schedule */}
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-6 sm:grid-cols-2">
         {weeklySchedule.map((session) => (
-          <Card key={session.day} variant="default">
-            <CardHeader className="pb-2 pt-4 px-4">
+          <Card key={session.day} variant="default" className="flex flex-col">
+            <CardHeader className="pb-4 pt-6 px-6 border-b border-[var(--color-border)]/50 mb-2">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-semibold">{session.day}</CardTitle>
-                <span className="text-xs text-[var(--color-muted)] bg-[var(--color-border)] px-2 py-0.5 rounded-full">
+                <CardTitle className="text-base font-semibold">
+                  {session.day}
+                </CardTitle>
+                <span className="text-xs font-medium text-[var(--color-foreground)] bg-[var(--color-border)] px-2.5 py-1 rounded-full">
                   {session.focus}
                 </span>
               </div>
             </CardHeader>
-            <CardContent className="px-4 pb-4 pt-0">
-              {session.exercises.map((exercise, i) => (
-                <ExerciseRow
-                  key={`${session.day}-${i}`}
-                  exercise={exercise}
-                  index={i}
-                  showAlternatives={hasInjuries}
-                />
-              ))}
+            <CardContent className="px-6 pb-6 pt-2 flex-grow">
+              <div className="space-y-1">
+                {session.exercises.map((exercise, i) => (
+                  <ExerciseRow
+                    key={`${session.day}-${i}`}
+                    exercise={exercise}
+                    index={i}
+                    showAlternatives={hasInjuries}
+                  />
+                ))}
+              </div>
             </CardContent>
           </Card>
         ))}
@@ -70,11 +81,16 @@ export function PlanDisplay({ plan, hasInjuries, isRegenerating = false, onRegen
 
       {/* Progression */}
       {progression && (
-        <Card variant="accent">
-          <CardContent className="p-4">
-            <p className="text-xs text-[var(--color-muted)] uppercase tracking-wider mb-1">Progression</p>
-            <p className="text-sm text-[var(--color-foreground)]">{progression}</p>
-          </CardContent>
+        <Card variant="accent" className="mt-8 overflow-hidden relative">
+          <div className="absolute top-0 left-0 w-1 h-full bg-[var(--color-accent)]" />
+          <div className="p-6 sm:p-8">
+            <h4 className="text-xs font-semibold text-[var(--color-accent)] uppercase tracking-widest mb-3">
+              Progression Guidance
+            </h4>
+            <p className="text-[var(--color-foreground)] leading-relaxed">
+              {progression}
+            </p>
+          </div>
         </Card>
       )}
     </div>

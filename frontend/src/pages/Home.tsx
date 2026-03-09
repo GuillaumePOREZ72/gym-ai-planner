@@ -1,8 +1,7 @@
-import { Link, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Zap, Target, Calendar, ArrowRight, Sparkles, Clock } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
-import { useAuth } from "../context/AuthContext";
 
 const features = [
   {
@@ -28,12 +27,6 @@ const features = [
 ];
 
 export default function Home() {
-  const { user, isLoading } = useAuth();
-
-  if (!isLoading && user) {
-    return <Navigate to="/profile" replace />;
-  }
-
   return (
     <div className="min-h-screen">
       {/* Hero Section */}

@@ -24,7 +24,7 @@ function App() {
               <Route path="onboarding" element={<Onboarding />} />
               <Route path="profile" element={<Profile />} />
               <Route path="auth/:pathname" element={<Auth />} />
-              <Route path="account" element={<Account />} />
+              <Route path="account/*" element={<Account />} />
             </Routes>
           </main>
         </div>
