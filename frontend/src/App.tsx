@@ -3,6 +3,9 @@ import Home from "./pages/Home"
 import Profile from "./pages/Profile"
 import Account from "./pages/Account"
 import Onboarding from "./pages/Onboarding"
+import Fitness from "./pages/Fitness"
+import Nutrition from "./pages/Nutrition"
+import Dashboard from "./pages/Dashboard"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Navbar from "./components/layout/Navbar"
 import { NeonAuthUIProvider } from '@neondatabase/neon-js/auth/react';
@@ -27,6 +30,9 @@ function App() {
               <Route path="profile" element={<Profile />} />
               <Route path="auth/:pathname" element={<Auth />} />
               <Route path="account/*" element={<Account />} />
+              <Route path="fitness" element={<Fitness />} />
+              <Route path="nutrition" element={<Nutrition />} />
+              <Route path="dashboard" element={<Dashboard />} />
             </Routes>
           </main>
         </div>

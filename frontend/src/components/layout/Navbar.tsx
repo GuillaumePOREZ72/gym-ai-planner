@@ -20,6 +20,15 @@ const Navbar = () => {
         <div className="flex items-center space-x-4">
           {user ? (
             <>
+              <Link to="/dashboard" className="text-sm text-[var(--color-muted)] hover:text-[var(--color-foreground)] transition-colors">
+                Dashboard
+              </Link>
+              <Link to="/fitness" className="text-sm text-[var(--color-muted)] hover:text-[var(--color-foreground)] transition-colors">
+                Fitness
+              </Link>
+              <Link to="/nutrition" className="text-sm text-[var(--color-muted)] hover:text-[var(--color-foreground)] transition-colors">
+                Nutrition
+              </Link>
               <Link to="/profile">
                 <Button variant="ghost" size="sm">
                   My Plan
