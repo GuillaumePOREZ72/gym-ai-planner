@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 import profileRouter from "./routes/profile";
 import planRouter from "./routes/plan";
+import workoutsRouter from "./routes/workouts";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -40,6 +41,7 @@ app.use(async (req, _res, next) => {
 
 app.use("/api/profile", profileRouter);
 app.use("/api/plan", planRouter);
+app.use("/api/workouts", workoutsRouter);
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
