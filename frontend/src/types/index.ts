@@ -54,3 +54,27 @@ export interface OnboardingFormData {
   preferredSplit: string;
   injuries: string;
 }
+
+export interface Workout {
+  id: string;
+  userId: string;
+  date: string;
+  type: string;
+  duration: number;
+  calories: number;
+  aiInsight?: string;
+  createdAt: string;
+}
+
+export interface Meal {
+  id: string;
+  userId: string;
+  date: string;
+  name: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  aiInsight?: string;
+  createdAt: string;
+}

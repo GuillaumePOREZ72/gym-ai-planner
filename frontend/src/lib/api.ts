@@ -1,5 +1,5 @@
 import { authClient } from "./auth";
-import type { UserProfile, TrainingPlan, OnboardingFormData } from "../types";
+import type { UserProfile, TrainingPlan, OnboardingFormData, Workout, Meal } from "../types";
 
 const API_URL = import.meta.env.VITE_API_URL as string;
 
@@ -58,4 +58,54 @@ export async function getProfile(): Promise<UserProfile | null> {
   } catch {
     return null;
   }
+}
+
+// --- Workouts ---
+
+export async function getWorkouts(): Promise<Workout[]> {
+  const result = await apiFetch<{ workouts: Workout[] }>("/api/workouts");
+  return result.workouts;
+}
+
+export async function createWorkout(data: {
+  date: string;
+  type: string;
+  duration: number;
+  calories: number;
+}): Promise<Workout> {
+  const result = await apiFetch<{ workout: Workout }>("/api/workouts", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+  return result.workout;
+}
+
+export async function deleteWorkout(id: string): Promise<void> {
+  await apiFetch<void>(`/api/workouts/${id}`, { method: "DELETE" });
+}
+
+// --- Meals ---
+
+export async function getMeals(): Promise<Meal[]> {
+  const result = await apiFetch<{ meals: Meal[] }>("/api/meals");
+  return result.meals;
+}
+
+export async function createMeal(data: {
+  date: string;
+  name: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+}): Promise<Meal> {
+  const result = await apiFetch<{ meal: Meal }>("/api/meals", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+  return result.meal;
+}
+
+export async function deleteMeal(id: string): Promise<void> {
+  await apiFetch<void>(`/api/meals/${id}`, { method: "DELETE" });
 }
