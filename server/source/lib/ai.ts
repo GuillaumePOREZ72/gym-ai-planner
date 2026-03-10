@@ -105,3 +105,49 @@ ${p.injuries ? "- Include an 'alternatives' array for exercises that may aggrava
 
   return { planJson, planText: raw };
 }
+
+export async function generateWorkoutInsight(workout: {
+  type: string;
+  duration: number;
+  calories: number;
+}): Promise<string> {
+  const response = await client.chat.completions.create({
+    model: "liquid/lfm-2.5-1.2b-instruct:free",
+    messages: [
+      {
+        role: "system",
+        content:
+          "You are a fitness coach. Give a short, practical insight (2-3 sentences) about this workout. Be specific and actionable. No markdown.",
+      },
+      {
+        role: "user",
+        content: `Workout: ${workout.type}, ${workout.duration} minutes, ${workout.calories} calories burned.`,
+      },
+    ],
+  });
+  return response.choices[0]?.message?.content?.trim() ?? "";
+}
+
+export async function generateMealInsight(meal: {
+  name: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+}): Promise<string> {
+  const response = await client.chat.completions.create({
+    model: "liquid/lfm-2.5-1.2b-instruct:free",
+    messages: [
+      {
+        role: "system",
+        content:
+          "You are a nutritionist. Give a short, practical insight (2-3 sentences) about this meal. Be specific and actionable. No markdown.",
+      },
+      {
+        role: "user",
+        content: `Meal: ${meal.name}, ${meal.calories} kcal, ${meal.protein}g protein, ${meal.carbs}g carbs, ${meal.fat}g fat.`,
+      },
+    ],
+  });
+  return response.choices[0]?.message?.content?.trim() ?? "";
+}
