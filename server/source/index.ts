@@ -6,6 +6,7 @@ import { createRemoteJWKSet, jwtVerify } from "jose";
 import profileRouter from "./routes/profile";
 import planRouter from "./routes/plan";
 import workoutsRouter from "./routes/workouts";
+import mealsRouter from "./routes/meals";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -42,6 +43,7 @@ app.use(async (req, _res, next) => {
 app.use("/api/profile", profileRouter);
 app.use("/api/plan", planRouter);
 app.use("/api/workouts", workoutsRouter);
+app.use("/api/meals", mealsRouter);
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
