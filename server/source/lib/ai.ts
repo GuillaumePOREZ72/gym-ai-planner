@@ -106,6 +106,11 @@ ${p.injuries ? "- Include an 'alternatives' array for exercises that may aggrava
   return { planJson, planText: raw };
 }
 
+/**
+ * Generates a short AI coaching insight for a logged workout.
+ * @throws If the LLM call fails (network error, rate limit, etc.).
+ *         Callers are responsible for catching and treating as non-fatal.
+ */
 export async function generateWorkoutInsight(workout: {
   type: string;
   duration: number;
@@ -128,6 +133,11 @@ export async function generateWorkoutInsight(workout: {
   return response.choices[0]?.message?.content?.trim() ?? "";
 }
 
+/**
+ * Generates a short AI nutritionist insight for a logged meal.
+ * @throws If the LLM call fails (network error, rate limit, etc.).
+ *         Callers are responsible for catching and treating as non-fatal.
+ */
 export async function generateMealInsight(meal: {
   name: string;
   calories: number;
