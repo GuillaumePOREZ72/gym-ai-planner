@@ -37,7 +37,8 @@ router.post("/", async (req: Request, res: Response) => {
     carbs: number;
     fat: number;
   };
-  if (!date || !name || calories == null || protein == null || carbs == null || fat == null) {
+  if (!date.trim() || !name.trim() || calories == null || protein == null || carbs == null || fat == null ||
+      isNaN(Number(calories)) || isNaN(Number(protein)) || isNaN(Number(carbs)) || isNaN(Number(fat))) {
     res.status(400).json({ error: "Missing required fields" });
     return;
   }
