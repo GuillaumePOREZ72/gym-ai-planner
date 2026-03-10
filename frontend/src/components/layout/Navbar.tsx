@@ -1,11 +1,13 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { Button } from "../ui/Button";
-import { Dumbbell } from "lucide-react";
+import { Dumbbell, Sun, Moon } from "lucide-react";
 import { Avatar } from "../ui/Avatar";
+import { useTheme } from "../../context/ThemeContext";
 
 const Navbar = () => {
   const { user } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
@@ -23,6 +25,13 @@ const Navbar = () => {
                   My Plan
                 </Button>
               </Link>
+              <button
+                onClick={toggleTheme}
+                aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+                className="p-2 rounded-md text-[var(--color-muted)] hover:text-[var(--color-foreground)] transition-colors"
+              >
+                {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              </button>
               <Link
                 to="/account"
                 aria-label="Account settings"
