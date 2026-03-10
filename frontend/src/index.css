@@ -13,6 +13,16 @@
   --color-accent-hover: #84cc16;
 }
 
+[data-theme="light"] {
+  --color-background: #f4f4f5;
+  --color-foreground: #09090b;
+  --color-muted: #71717a;
+  --color-border: #e4e4e7;
+  --color-card: #ffffff;
+  --color-accent: #65a30d;
+  --color-accent-hover: #4d7c0f;
+}
+
 @layer base {
   html {
     font-family: var(--font-sans);

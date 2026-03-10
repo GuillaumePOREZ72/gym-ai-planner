@@ -8,11 +8,13 @@ import Navbar from "./components/layout/Navbar"
 import { NeonAuthUIProvider } from '@neondatabase/neon-js/auth/react';
 import { authClient } from "./lib/auth"
 import { AuthProvider } from "./context/AuthContext"
+import { ThemeProvider } from "./context/ThemeContext"
 
 
 function App() {
 
   return (
+    <ThemeProvider>
     <NeonAuthUIProvider authClient={authClient} defaultTheme="dark">
       <AuthProvider>
       <BrowserRouter>
@@ -31,6 +33,7 @@ function App() {
       </BrowserRouter>
       </AuthProvider>
     </NeonAuthUIProvider>
+    </ThemeProvider>
   )
 }
 
