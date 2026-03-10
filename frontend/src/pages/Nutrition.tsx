@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { PlusCircle, Utensils, Trash2, Sparkles } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  Legend, ResponsiveContainer,
+  ResponsiveContainer,
 } from "recharts";
 import type { Meal } from "../types";
 import { getMeals, createMeal, deleteMeal } from "../lib/api";
