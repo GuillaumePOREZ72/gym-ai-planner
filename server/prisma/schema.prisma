@@ -28,3 +28,31 @@ model TrainingPlans {
 
   @@index([userId])
 }
+
+model Workout {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  date      String   @db.VarChar(10)
+  type      String   @db.VarChar(100)
+  duration  Int
+  calories  Int
+  aiInsight String?  @db.Text
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+
+  @@index([userId])
+}
+
+model Meal {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  date      String   @db.VarChar(10)
+  name      String   @db.VarChar(200)
+  calories  Int
+  protein   Float
+  carbs     Float
+  fat       Float
+  aiInsight String?  @db.Text
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+
+  @@index([userId])
+}
