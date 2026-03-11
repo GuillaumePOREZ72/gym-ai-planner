@@ -161,3 +161,53 @@ export async function generateMealInsight(meal: {
   });
   return response.choices[0]?.message?.content?.trim() ?? "";
 }
+
+export async function generateWeeklyReport(params: {
+  profile: {
+    goal: string;
+    experience: string;
+    daysPerWeek: number;
+    sessionLength: number;
+  };
+  workouts: Array<{ date: string; type: string; duration: number; calories: number }>;
+  mealDays: Array<{ date: string; totalCalories: number; totalProtein: number }>;
+}): Promise<string> {
+  const { profile, workouts, mealDays } = params;
+
+  const workoutSummary =
+    workouts.length === 0
+      ? "No workouts logged this week."
+      : workouts.map((w) => `- ${w.date}: ${w.type}, ${w.duration} min, ${w.calories} kcal`).join("\n");
+
+  const mealSummary =
+    mealDays.length === 0
+      ? "No meals logged this week."
+      : mealDays.map((d) => `- ${d.date}: ${d.totalCalories} kcal, ${d.totalProtein.toFixed(1)}g protein`).join("\n");
+
+  const userPrompt = `
+User profile:
+- Goal: ${GoalMap[profile.goal] || profile.goal}
+- Experience: ${ExpMap[profile.experience] || profile.experience}
+- Target: ${profile.daysPerWeek} training days/week, ${profile.sessionLength} min/session
+
+This week's workouts (${workouts.length} logged):
+${workoutSummary}
+
+This week's nutrition by day (${mealDays.length} days logged):
+${mealSummary}
+`.trim();
+
+  const response = await client.chat.completions.create({
+    model: "liquid/lfm-2.5-1.2b-instruct:free",
+    messages: [
+      {
+        role: "system",
+        content:
+          "You are a concise, practical fitness coach writing a weekly check-in summary. Write 3 to 5 sentences in plain English. Mention what went well, what could be improved, and one concrete recommendation for next week. No markdown, no bullet points, no lists. Speak directly to the user.",
+      },
+      { role: "user", content: userPrompt },
+    ],
+  });
+
+  return response.choices[0]?.message?.content?.trim() ?? "";
+}
