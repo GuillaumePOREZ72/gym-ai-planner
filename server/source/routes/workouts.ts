@@ -1,4 +1,4 @@
-import { Router, Request, Response } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { z } from "zod";
 import { prisma } from "../lib/prisma";
 import { generateWorkoutInsight } from "../lib/ai";
@@ -16,7 +16,7 @@ const CreateWorkoutSchema = z.object({
 const router = Router();
 
 // GET /api/workouts — list workouts for the authenticated user
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response, next: NextFunction) => {
   const userId: string | undefined = (req as any).userId;
   if (!userId) {
     res.status(401).json({ error: "Unauthorized" });
@@ -28,13 +28,13 @@ router.get("/", async (req: Request, res: Response) => {
       orderBy: { date: "desc" },
     });
     res.json({ workouts });
-  } catch {
-    res.status(500).json({ error: "Failed to fetch workouts" });
+  } catch (err) {
+    next(err);
   }
 });
 
 // POST /api/workouts — create a workout and generate AI insight
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response, next: NextFunction) => {
   const userId: string | undefined = (req as any).userId;
   if (!userId) {
     res.status(401).json({ error: "Unauthorized" });
@@ -59,13 +59,13 @@ router.post("/", async (req: Request, res: Response) => {
       data: { userId, date, type, duration, calories, aiInsight },
     });
     res.status(201).json({ workout });
-  } catch {
-    res.status(500).json({ error: "Failed to create workout" });
+  } catch (err) {
+    next(err);
   }
 });
 
 // DELETE /api/workouts/:id
-router.delete("/:id", async (req: Request, res: Response) => {
+router.delete("/:id", async (req: Request, res: Response, next: NextFunction) => {
   const userId: string | undefined = (req as any).userId;
   if (!userId) {
     res.status(401).json({ error: "Unauthorized" });
@@ -80,8 +80,8 @@ router.delete("/:id", async (req: Request, res: Response) => {
     }
     await prisma.workout.delete({ where: { id } });
     res.status(204).send();
-  } catch {
-    res.status(500).json({ error: "Failed to delete workout" });
+  } catch (err) {
+    next(err);
   }
 });
 

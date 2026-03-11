@@ -96,6 +96,16 @@ app.use("/api/meals", mealsRouter);
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
+// Global error handler — catches errors passed via next(err) from all routes.
+// Must be last middleware with exactly 4 params.
+app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  const isProd = process.env.NODE_ENV === "production";
+  console.error("[error]", err.message, isProd ? undefined : err.stack);
+  res.status(500).json({
+    error: isProd ? "Internal server error" : err.message,
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

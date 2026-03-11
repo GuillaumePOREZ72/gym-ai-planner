@@ -1,4 +1,4 @@
-import { Router, Request, Response } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import rateLimit from "express-rate-limit";
 import { prisma } from "../lib/prisma";
 import { generateTrainingPlan } from "../lib/ai";
@@ -13,51 +13,58 @@ const aiLimiter = rateLimit({
   message: { error: "AI plan generation limit reached. Try again in an hour." },
 });
 
-router.post("/generate", aiLimiter, async (req: Request, res: Response) => {
+router.post("/generate", aiLimiter, async (req: Request, res: Response, next: NextFunction) => {
   const userId: string | undefined = (req as any).userId;
   if (!userId) {
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
 
-  const profile = await prisma.userProfiles.findUnique({ where: { userId } });
-  if (!profile) {
-    res.status(404).json({ error: "Profile not found. Complete onboarding first." });
-    return;
+  try {
+    const profile = await prisma.userProfiles.findUnique({ where: { userId } });
+    if (!profile) {
+      res.status(404).json({ error: "Profile not found. Complete onboarding first." });
+      return;
+    }
+
+    const { planJson, planText } = await generateTrainingPlan(profile);
+
+    const existing = await prisma.trainingPlans.findFirst({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const plan = await prisma.trainingPlans.create({
+      data: {
+        userId,
+        planJson,
+        planText,
+        version: existing ? existing.version + 1 : 1,
+      },
+    });
+
+    res.json({ plan });
+  } catch (err) {
+    next(err);
   }
-
-  const { planJson, planText } = await generateTrainingPlan(profile);
-
-  const existing = await prisma.trainingPlans.findFirst({
-    where: { userId },
-    orderBy: { createdAt: "desc" },
-  });
-
-  const plan = await prisma.trainingPlans.create({
-    data: {
-      userId,
-      planJson,
-      planText,
-      version: existing ? existing.version + 1 : 1,
-    },
-  });
-
-  res.json({ plan });
 });
 
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response, next: NextFunction) => {
   const userId: string | undefined = (req as any).userId;
   if (!userId) {
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
 
-  const plan = await prisma.trainingPlans.findFirst({
-    where: { userId },
-    orderBy: { createdAt: "desc" },
-  });
-
-  res.json({ plan });
+  try {
+    const plan = await prisma.trainingPlans.findFirst({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+    });
+    res.json({ plan });
+  } catch (err) {
+    next(err);
+  }
 });
 
 export default router;

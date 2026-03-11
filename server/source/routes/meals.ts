@@ -1,4 +1,4 @@
-import { Router, Request, Response } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { z } from "zod";
 import { prisma } from "../lib/prisma";
 import { generateMealInsight } from "../lib/ai";
@@ -18,7 +18,7 @@ const CreateMealSchema = z.object({
 const router = Router();
 
 // GET /api/meals — list meals for the authenticated user
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response, next: NextFunction) => {
   const userId: string | undefined = (req as any).userId;
   if (!userId) {
     res.status(401).json({ error: "Unauthorized" });
@@ -30,13 +30,13 @@ router.get("/", async (req: Request, res: Response) => {
       orderBy: { date: "desc" },
     });
     res.json({ meals });
-  } catch {
-    res.status(500).json({ error: "Failed to fetch meals" });
+  } catch (err) {
+    next(err);
   }
 });
 
 // POST /api/meals — create a meal and generate AI insight
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response, next: NextFunction) => {
   const userId: string | undefined = (req as any).userId;
   if (!userId) {
     res.status(401).json({ error: "Unauthorized" });
@@ -76,13 +76,13 @@ router.post("/", async (req: Request, res: Response) => {
       },
     });
     res.status(201).json({ meal });
-  } catch {
-    res.status(500).json({ error: "Failed to create meal" });
+  } catch (err) {
+    next(err);
   }
 });
 
 // DELETE /api/meals/:id
-router.delete("/:id", async (req: Request, res: Response) => {
+router.delete("/:id", async (req: Request, res: Response, next: NextFunction) => {
   const userId: string | undefined = (req as any).userId;
   if (!userId) {
     res.status(401).json({ error: "Unauthorized" });
@@ -97,8 +97,8 @@ router.delete("/:id", async (req: Request, res: Response) => {
     }
     await prisma.meal.delete({ where: { id } });
     res.status(204).send();
-  } catch {
-    res.status(500).json({ error: "Failed to delete meal" });
+  } catch (err) {
+    next(err);
   }
 });
 

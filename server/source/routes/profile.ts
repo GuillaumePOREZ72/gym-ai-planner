@@ -1,4 +1,4 @@
-import { Router, Request, Response } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { z } from "zod";
 import { prisma } from "../lib/prisma";
 
@@ -14,17 +14,21 @@ const CreateProfileSchema = z.object({
 
 const router = Router();
 
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response, next: NextFunction) => {
   const userId: string | undefined = (req as any).userId;
   if (!userId) {
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
-  const profile = await prisma.userProfiles.findUnique({ where: { userId } });
-  res.json({ profile });
+  try {
+    const profile = await prisma.userProfiles.findUnique({ where: { userId } });
+    res.json({ profile });
+  } catch (err) {
+    next(err);
+  }
 });
 
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response, next: NextFunction) => {
   const userId: string | undefined = (req as any).userId;
   if (!userId) {
     res.status(401).json({ error: "Unauthorized" });
@@ -38,14 +42,18 @@ router.post("/", async (req: Request, res: Response) => {
   }
   const { goal, experience, daysPerWeek, sessionLength, equipment, preferredSplit, injuries } = parsed.data;
 
-  const profile = await prisma.userProfiles.upsert({
-    where: { userId },
-    update: { goal, experience, daysPerWeek, sessionLength, equipment, preferredSplit, injuries: injuries ?? null },
-    create: { userId, goal, experience, daysPerWeek, sessionLength, equipment, preferredSplit, injuries: injuries ?? null },
-  });
+  try {
+    const profile = await prisma.userProfiles.upsert({
+      where: { userId },
+      update: { goal, experience, daysPerWeek, sessionLength, equipment, preferredSplit, injuries: injuries ?? null },
+      create: { userId, goal, experience, daysPerWeek, sessionLength, equipment, preferredSplit, injuries: injuries ?? null },
+    });
 
-  // Return full record so client confirms persistence before generating plan
-  res.json({ profile });
+    // Return full record so client confirms persistence before generating plan
+    res.json({ profile });
+  } catch (err) {
+    next(err);
+  }
 });
 
 export default router;
