@@ -13,6 +13,12 @@
   --color-accent-hover: #84cc16;
 }
 
+/* Bridge our theme vars to Neon's --neon-foreground (dark-first, no .dark class needed) */
+:root {
+  --foreground: #fafafa;
+  --background: #0a0a0a;
+}
+
 [data-theme="light"] {
   --color-background: #f4f4f5;
   --color-foreground: #09090b;
@@ -21,6 +27,8 @@
   --color-card: #ffffff;
   --color-accent: #65a30d;
   --color-accent-hover: #4d7c0f;
+  --foreground: #09090b;
+  --background: #f4f4f5;
 }
 
 @layer base {
