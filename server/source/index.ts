@@ -12,6 +12,7 @@ import profileRouter from "./routes/profile";
 import planRouter from "./routes/plan";
 import workoutsRouter from "./routes/workouts";
 import mealsRouter from "./routes/meals";
+import reportRouter from "./routes/report";
 
 // Guard: NEON_AUTH_URL must be set in production; warn loudly if absent in dev too
 if (process.env.NODE_ENV === "production" && !process.env.NEON_AUTH_URL) {
@@ -104,6 +105,7 @@ app.use("/api/profile", profileRouter);
 app.use("/api/plan", planRouter);
 app.use("/api/workouts", workoutsRouter);
 app.use("/api/meals", mealsRouter);
+app.use("/api/report", reportRouter);
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
