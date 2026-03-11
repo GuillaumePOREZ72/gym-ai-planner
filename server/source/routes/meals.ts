@@ -1,6 +1,19 @@
 import { Router, Request, Response } from "express";
+import { z } from "zod";
 import { prisma } from "../lib/prisma";
 import { generateMealInsight } from "../lib/ai";
+
+const CreateMealSchema = z.object({
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD").refine(
+    (s) => !isNaN(Date.parse(s)),
+    "Date must be a valid calendar date"
+  ),
+  name: z.string().min(1).max(200),
+  calories: z.number().int().min(0).max(10000),
+  protein: z.number().min(0).max(1000),
+  carbs: z.number().min(0).max(1000),
+  fat: z.number().min(0).max(1000),
+});
 
 const router = Router();
 
@@ -29,28 +42,21 @@ router.post("/", async (req: Request, res: Response) => {
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
-  const { date, name, calories, protein, carbs, fat } = req.body as {
-    date: string;
-    name: string;
-    calories: number;
-    protein: number;
-    carbs: number;
-    fat: number;
-  };
-  if (!date.trim() || !name.trim() || calories == null || protein == null || carbs == null || fat == null ||
-      isNaN(Number(calories)) || isNaN(Number(protein)) || isNaN(Number(carbs)) || isNaN(Number(fat))) {
-    res.status(400).json({ error: "Missing required fields" });
+  const parsed = CreateMealSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.flatten().fieldErrors });
     return;
   }
+  const { date, name, calories, protein, carbs, fat } = parsed.data;
 
   let aiInsight: string | undefined;
   try {
     aiInsight = await generateMealInsight({
       name,
-      calories: Number(calories),
-      protein: Number(protein),
-      carbs: Number(carbs),
-      fat: Number(fat),
+      calories,
+      protein,
+      carbs,
+      fat,
     });
   } catch {
     // Non-fatal: proceed without AI insight
@@ -62,10 +68,10 @@ router.post("/", async (req: Request, res: Response) => {
         userId,
         date,
         name,
-        calories: Number(calories),
-        protein: Number(protein),
-        carbs: Number(carbs),
-        fat: Number(fat),
+        calories,
+        protein,
+        carbs,
+        fat,
         aiInsight,
       },
     });

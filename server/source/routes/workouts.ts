@@ -1,6 +1,17 @@
 import { Router, Request, Response } from "express";
+import { z } from "zod";
 import { prisma } from "../lib/prisma";
 import { generateWorkoutInsight } from "../lib/ai";
+
+const CreateWorkoutSchema = z.object({
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD").refine(
+    (s) => !isNaN(Date.parse(s)),
+    "Date must be a valid calendar date"
+  ),
+  type: z.string().min(1).max(100),
+  duration: z.number().int().min(1).max(600),
+  calories: z.number().int().min(0).max(10000),
+});
 
 const router = Router();
 
@@ -29,16 +40,12 @@ router.post("/", async (req: Request, res: Response) => {
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
-  const { date, type, duration, calories } = req.body as {
-    date: string;
-    type: string;
-    duration: number;
-    calories: number;
-  };
-  if (!date || !type || duration == null || calories == null) {
-    res.status(400).json({ error: "Missing required fields" });
+  const parsed = CreateWorkoutSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.flatten().fieldErrors });
     return;
   }
+  const { date, type, duration, calories } = parsed.data;
 
   let aiInsight: string | undefined;
   try {
@@ -49,7 +56,7 @@ router.post("/", async (req: Request, res: Response) => {
 
   try {
     const workout = await prisma.workout.create({
-      data: { userId, date, type, duration: Number(duration), calories: Number(calories), aiInsight },
+      data: { userId, date, type, duration, calories, aiInsight },
     });
     res.status(201).json({ workout });
   } catch {
