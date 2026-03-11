@@ -7,6 +7,7 @@ exports.normalizeProfileData = normalizeProfileData;
 exports.generateTrainingPlan = generateTrainingPlan;
 exports.generateWorkoutInsight = generateWorkoutInsight;
 exports.generateMealInsight = generateMealInsight;
+exports.generateWeeklyReport = generateWeeklyReport;
 const openai_1 = __importDefault(require("openai"));
 const GoalMap = {
     bulk: "build muscle and gain size",
@@ -131,4 +132,47 @@ async function generateMealInsight(meal) {
         ],
     });
     return response.choices[0]?.message?.content?.trim() ?? "";
+}
+/**
+ * Generates a weekly coaching check-in summary for the user.
+ * @throws If the LLM call fails (network error, rate limit, etc.).
+ *         Callers are responsible for catching and propagating via next(err).
+ */
+async function generateWeeklyReport(params) {
+    const { profile, workouts, mealDays } = params;
+    // Cap to last 14 entries to avoid unbounded prompt length
+    const cappedWorkouts = workouts.slice(-14);
+    const cappedMeals = mealDays.slice(-14);
+    const workoutSummary = cappedWorkouts.length === 0
+        ? "No workouts logged this week."
+        : cappedWorkouts.map((w) => `- ${w.date}: ${w.type}, ${w.duration} min, ${w.calories} kcal`).join("\n");
+    const mealSummary = cappedMeals.length === 0
+        ? "No meals logged this week."
+        : cappedMeals.map((d) => `- ${d.date}: ${d.totalCalories} kcal, ${(d.totalProtein || 0).toFixed(1)}g protein`).join("\n");
+    const userPrompt = `
+User profile:
+- Goal: ${GoalMap[profile.goal] || profile.goal}
+- Experience: ${ExpMap[profile.experience] || profile.experience}
+- Target: ${profile.daysPerWeek} training days/week, ${profile.sessionLength} min/session
+
+This week's workouts (${cappedWorkouts.length} logged):
+${workoutSummary}
+
+This week's nutrition by day (${cappedMeals.length} days logged):
+${mealSummary}
+`.trim();
+    const response = await client.chat.completions.create({
+        model: "liquid/lfm-2.5-1.2b-instruct:free",
+        messages: [
+            {
+                role: "system",
+                content: "You are a concise, practical fitness coach writing a weekly check-in summary. Write 3 to 5 sentences in plain English. Mention what went well, what could be improved, and one concrete recommendation for next week. No markdown, no bullet points, no lists. Speak directly to the user.",
+            },
+            { role: "user", content: userPrompt },
+        ],
+    });
+    const content = response.choices[0]?.message?.content?.trim() ?? "";
+    if (!content)
+        throw new Error("Weekly report: LLM returned an empty response.");
+    return content;
 }

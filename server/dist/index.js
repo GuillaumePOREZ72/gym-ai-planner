@@ -17,6 +17,7 @@ const profile_1 = __importDefault(require("./routes/profile"));
 const plan_1 = __importDefault(require("./routes/plan"));
 const workouts_1 = __importDefault(require("./routes/workouts"));
 const meals_1 = __importDefault(require("./routes/meals"));
+const report_1 = __importDefault(require("./routes/report"));
 // Guard: NEON_AUTH_URL must be set in production; warn loudly if absent in dev too
 if (process.env.NODE_ENV === "production" && !process.env.NEON_AUTH_URL) {
     console.error("FATAL: NEON_AUTH_URL is not set in production. Exiting.");
@@ -103,6 +104,7 @@ app.use("/api/profile", profile_1.default);
 app.use("/api/plan", plan_1.default);
 app.use("/api/workouts", workouts_1.default);
 app.use("/api/meals", meals_1.default);
+app.use("/api/report", report_1.default);
 app.get("/health", (_req, res) => res.json({ ok: true }));
 // Global error handler — catches errors passed via next(err) from all routes.
 // Must be last middleware with exactly 4 params.
