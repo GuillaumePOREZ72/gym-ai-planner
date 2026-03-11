@@ -162,6 +162,11 @@ export async function generateMealInsight(meal: {
   return response.choices[0]?.message?.content?.trim() ?? "";
 }
 
+/**
+ * Generates a weekly coaching check-in summary for the user.
+ * @throws If the LLM call fails (network error, rate limit, etc.).
+ *         Callers are responsible for catching and propagating via next(err).
+ */
 export async function generateWeeklyReport(params: {
   profile: {
     goal: string;
@@ -174,15 +179,19 @@ export async function generateWeeklyReport(params: {
 }): Promise<string> {
   const { profile, workouts, mealDays } = params;
 
+  // Cap to last 14 entries to avoid unbounded prompt length
+  const cappedWorkouts = workouts.slice(-14);
+  const cappedMeals = mealDays.slice(-14);
+
   const workoutSummary =
-    workouts.length === 0
+    cappedWorkouts.length === 0
       ? "No workouts logged this week."
-      : workouts.map((w) => `- ${w.date}: ${w.type}, ${w.duration} min, ${w.calories} kcal`).join("\n");
+      : cappedWorkouts.map((w) => `- ${w.date}: ${w.type}, ${w.duration} min, ${w.calories} kcal`).join("\n");
 
   const mealSummary =
-    mealDays.length === 0
+    cappedMeals.length === 0
       ? "No meals logged this week."
-      : mealDays.map((d) => `- ${d.date}: ${d.totalCalories} kcal, ${d.totalProtein.toFixed(1)}g protein`).join("\n");
+      : cappedMeals.map((d) => `- ${d.date}: ${d.totalCalories} kcal, ${(d.totalProtein || 0).toFixed(1)}g protein`).join("\n");
 
   const userPrompt = `
 User profile:
@@ -190,10 +199,10 @@ User profile:
 - Experience: ${ExpMap[profile.experience] || profile.experience}
 - Target: ${profile.daysPerWeek} training days/week, ${profile.sessionLength} min/session
 
-This week's workouts (${workouts.length} logged):
+This week's workouts (${cappedWorkouts.length} logged):
 ${workoutSummary}
 
-This week's nutrition by day (${mealDays.length} days logged):
+This week's nutrition by day (${cappedMeals.length} days logged):
 ${mealSummary}
 `.trim();
 
@@ -209,5 +218,7 @@ ${mealSummary}
     ],
   });
 
-  return response.choices[0]?.message?.content?.trim() ?? "";
+  const content = response.choices[0]?.message?.content?.trim() ?? "";
+  if (!content) throw new Error("Weekly report: LLM returned an empty response.");
+  return content;
 }
