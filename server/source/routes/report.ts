@@ -10,6 +10,7 @@ const reportLimiter = rateLimit({
   limit: 3,
   standardHeaders: true,
   legacyHeaders: false,
+  keyGenerator: (req: Request) => req.userId ?? req.ip ?? "unknown",
   message: { error: "Weekly report generation limit reached. Try again in an hour." },
 });
 
@@ -46,10 +47,13 @@ router.post("/weekly", reportLimiter, async (req: Request, res: Response, next: 
     const monday = new Date(today);
     monday.setDate(today.getDate() - daysToMonday);
     const weekStart = monday.toISOString().slice(0, 10);
+    // NOTE: weekStart is computed in server (UTC) time. Users in negative-UTC-offset
+    // timezones may see a slightly different week boundary near midnight Sunday.
 
     const sevenDaysAgo = new Date(today);
     sevenDaysAgo.setDate(today.getDate() - 7);
     const sevenDaysAgoStr = sevenDaysAgo.toISOString().slice(0, 10);
+    // date is stored as 'YYYY-MM-DD'; string comparison is lexicographically correct
 
     const [workouts, meals] = await Promise.all([
       prisma.workout.findMany({ where: { userId, date: { gte: sevenDaysAgoStr } }, orderBy: { date: "asc" } }),
