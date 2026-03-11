@@ -1,5 +1,6 @@
 import "dotenv/config";
 import express from "express";
+import helmet from "helmet";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { createRemoteJWKSet, jwtVerify } from "jose";
@@ -16,6 +17,24 @@ const NEON_AUTH_URL = process.env.NEON_AUTH_URL;
 const JWKS = NEON_AUTH_URL
   ? createRemoteJWKSet(new URL(`${NEON_AUTH_URL}/.well-known/jwks.json`))
   : null;
+
+app.use(helmet({
+  contentSecurityPolicy: {
+    useDefaults: true,
+    directives: {
+      "script-src": ["'self'"],
+      "style-src": ["'self'", "'unsafe-inline'"],
+      "img-src": ["'self'", "data:", "https:"],
+      "connect-src": ["'self'", ...(process.env.NEON_AUTH_URL ? [process.env.NEON_AUTH_URL] : [])],
+      "frame-ancestors": ["'none'"],
+    },
+  },
+  strictTransportSecurity: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+  },
+  frameguard: { action: "deny" },
+}));
 
 app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:5173", credentials: true }));
 app.use(express.json());
