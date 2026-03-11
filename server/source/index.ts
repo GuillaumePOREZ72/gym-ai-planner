@@ -13,6 +13,14 @@ import planRouter from "./routes/plan";
 import workoutsRouter from "./routes/workouts";
 import mealsRouter from "./routes/meals";
 
+// Guard: NEON_AUTH_URL must be set in production; warn loudly if absent in dev too
+if (process.env.NODE_ENV === "production" && !process.env.NEON_AUTH_URL) {
+  console.error("FATAL: NEON_AUTH_URL is not set in production. Exiting.");
+  process.exit(1);
+} else if (!process.env.NEON_AUTH_URL) {
+  console.warn("WARNING: NEON_AUTH_URL is not set. All requests will be unauthenticated (401 on protected routes).");
+}
+
 const app = express();
 // trust proxy: false = Node is exposed directly (no Nginx/reverse proxy).
 // If a proxy is added in front, change to: app.set("trust proxy", 1)
@@ -84,7 +92,7 @@ app.use(async (req, _res, next) => {
     const { payload } = await jwtVerify(token, JWKS);
     const userId = (payload.sub ?? (payload as any).userId) as string | undefined;
     if (userId) {
-      (req as any).userId = userId;
+      req.userId = userId;
     }
   } catch {
     // Invalid/expired token — routes will return 401

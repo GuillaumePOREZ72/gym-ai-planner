@@ -14,7 +14,7 @@ const aiLimiter = rateLimit({
 });
 
 router.post("/generate", aiLimiter, async (req: Request, res: Response, next: NextFunction) => {
-  const userId: string | undefined = (req as any).userId;
+  const userId = req.userId;
   if (!userId) {
     res.status(401).json({ error: "Unauthorized" });
     return;
@@ -50,7 +50,7 @@ router.post("/generate", aiLimiter, async (req: Request, res: Response, next: Ne
 });
 
 router.get("/", async (req: Request, res: Response, next: NextFunction) => {
-  const userId: string | undefined = (req as any).userId;
+  const userId = req.userId;
   if (!userId) {
     res.status(401).json({ error: "Unauthorized" });
     return;

@@ -15,7 +15,7 @@ const CreateProfileSchema = z.object({
 const router = Router();
 
 router.get("/", async (req: Request, res: Response, next: NextFunction) => {
-  const userId: string | undefined = (req as any).userId;
+  const userId = req.userId;
   if (!userId) {
     res.status(401).json({ error: "Unauthorized" });
     return;
@@ -29,7 +29,7 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
 });
 
 router.post("/", async (req: Request, res: Response, next: NextFunction) => {
-  const userId: string | undefined = (req as any).userId;
+  const userId = req.userId;
   if (!userId) {
     res.status(401).json({ error: "Unauthorized" });
     return;

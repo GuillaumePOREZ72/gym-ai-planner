@@ -19,7 +19,7 @@ const router = Router();
 
 // GET /api/meals — list meals for the authenticated user
 router.get("/", async (req: Request, res: Response, next: NextFunction) => {
-  const userId: string | undefined = (req as any).userId;
+  const userId = req.userId;
   if (!userId) {
     res.status(401).json({ error: "Unauthorized" });
     return;
@@ -37,7 +37,7 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
 
 // POST /api/meals — create a meal and generate AI insight
 router.post("/", async (req: Request, res: Response, next: NextFunction) => {
-  const userId: string | undefined = (req as any).userId;
+  const userId = req.userId;
   if (!userId) {
     res.status(401).json({ error: "Unauthorized" });
     return;
@@ -83,7 +83,7 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
 
 // DELETE /api/meals/:id
 router.delete("/:id", async (req: Request, res: Response, next: NextFunction) => {
-  const userId: string | undefined = (req as any).userId;
+  const userId = req.userId;
   if (!userId) {
     res.status(401).json({ error: "Unauthorized" });
     return;

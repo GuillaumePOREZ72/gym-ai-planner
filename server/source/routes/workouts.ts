@@ -17,7 +17,7 @@ const router = Router();
 
 // GET /api/workouts — list workouts for the authenticated user
 router.get("/", async (req: Request, res: Response, next: NextFunction) => {
-  const userId: string | undefined = (req as any).userId;
+  const userId = req.userId;
   if (!userId) {
     res.status(401).json({ error: "Unauthorized" });
     return;
@@ -35,7 +35,7 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
 
 // POST /api/workouts — create a workout and generate AI insight
 router.post("/", async (req: Request, res: Response, next: NextFunction) => {
-  const userId: string | undefined = (req as any).userId;
+  const userId = req.userId;
   if (!userId) {
     res.status(401).json({ error: "Unauthorized" });
     return;
@@ -66,7 +66,7 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
 
 // DELETE /api/workouts/:id
 router.delete("/:id", async (req: Request, res: Response, next: NextFunction) => {
-  const userId: string | undefined = (req as any).userId;
+  const userId = req.userId;
   if (!userId) {
     res.status(401).json({ error: "Unauthorized" });
     return;
