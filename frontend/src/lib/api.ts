@@ -1,5 +1,5 @@
 import { authClient } from "./auth";
-import type { UserProfile, TrainingPlan, OnboardingFormData, Workout, Meal } from "../types";
+import type { UserProfile, TrainingPlan, OnboardingFormData, Workout, Meal, WeeklyReport } from "../types";
 
 const API_URL = import.meta.env.VITE_API_URL as string;
 
@@ -111,4 +111,20 @@ export async function createMeal(data: {
 
 export async function deleteMeal(id: string): Promise<void> {
   await apiFetch<void>(`/api/meals/${id}`, { method: "DELETE" });
+}
+
+// --- Weekly Report ---
+
+export async function getWeeklyReport(): Promise<WeeklyReport | null> {
+  try {
+    const result = await apiFetch<{ report: WeeklyReport | null }>("/api/report/weekly");
+    return result.report;
+  } catch {
+    return null;
+  }
+}
+
+export async function generateWeeklyReport(): Promise<WeeklyReport> {
+  const result = await apiFetch<{ report: WeeklyReport }>("/api/report/weekly", { method: "POST" });
+  return result.report;
 }

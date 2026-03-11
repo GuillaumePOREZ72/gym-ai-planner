@@ -78,3 +78,10 @@ export interface Meal {
   aiInsight?: string;
   createdAt: string;
 }
+
+export interface WeeklyReport {
+  userId: string;
+  reportText: string;
+  weekStart: string;
+  updatedAt: string;
+}
