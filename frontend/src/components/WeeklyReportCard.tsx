@@ -11,7 +11,11 @@ export default function WeeklyReportCard() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getWeeklyReport().then(setReport).finally(() => setIsLoading(false));
+    let active = true;
+    getWeeklyReport()
+      .then((r) => { if (active) setReport(r); })
+      .finally(() => { if (active) setIsLoading(false); });
+    return () => { active = false; };
   }, []);
 
   async function handleGenerate() {
@@ -38,16 +42,16 @@ export default function WeeklyReportCard() {
       ) : report ? (
         <div className="space-y-4">
           <p className="text-sm leading-relaxed">{report.reportText}</p>
+          {error && <p className="text-sm text-red-400">{error}</p>}
           <div className="flex items-center justify-between">
             <p className="text-xs text-[var(--color-muted)]">
-              Week of {report.weekStart} · Generated {new Date(report.updatedAt).toLocaleDateString("en-GB")}
+              Week of {new Date(report.weekStart + "T00:00:00").toLocaleDateString("en-GB")} · Generated {new Date(report.updatedAt).toLocaleDateString("en-GB")}
             </p>
             <Button variant="ghost" onClick={handleGenerate} disabled={isGenerating} className="flex items-center gap-1.5 text-xs">
               <RefreshCw className={`w-3.5 h-3.5 ${isGenerating ? "animate-spin" : ""}`} />
               {isGenerating ? "Generating…" : "Regenerate"}
             </Button>
           </div>
-          {error && <p className="text-sm text-red-400">{error}</p>}
         </div>
       ) : (
         <div className="space-y-3">
