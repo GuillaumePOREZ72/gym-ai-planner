@@ -7,6 +7,7 @@ import {
 } from "recharts";
 import type { Workout, Meal } from "../types";
 import { getWorkouts, getMeals } from "../lib/api";
+import WeeklyReportCard from "../components/WeeklyReportCard";
 
 export default function Dashboard() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -44,20 +45,20 @@ export default function Dashboard() {
   if (isLoading) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <p className="text-[var(--color-muted)]">Chargement…</p>
+        <p className="text-[var(--color-muted)]">Loading…</p>
       </div>
     );
   }
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
-      <h1 className="text-3xl font-bold">Tableau de bord</h1>
+      <h1 className="text-3xl font-bold">Dashboard</h1>
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Workout chart */}
         <div className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl p-6">
           <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <Activity className="w-5 h-5" /> Activité physique récente
+            <Activity className="w-5 h-5" /> Recent Activity
           </h2>
           {recentWorkouts.length > 0 ? (
             <ResponsiveContainer width="100%" height={240}>
@@ -68,19 +69,19 @@ export default function Dashboard() {
                 <YAxis yAxisId="right" orientation="right" tick={{ fill: "var(--color-muted)", fontSize: 11 }} />
                 <Tooltip contentStyle={{ background: "var(--color-card)", border: "1px solid var(--color-border)" }} />
                 <Legend />
-                <Line yAxisId="left" type="monotone" dataKey="duration" stroke="var(--color-accent)" name="Durée (min)" dot={false} />
+                <Line yAxisId="left" type="monotone" dataKey="duration" stroke="var(--color-accent)" name="Duration (min)" dot={false} />
                 <Line yAxisId="right" type="monotone" dataKey="calories" stroke="#82ca9d" name="Calories" dot={false} />
               </LineChart>
             </ResponsiveContainer>
           ) : (
-            <p className="text-sm text-[var(--color-muted)]">Aucun entraînement enregistré.</p>
+            <p className="text-sm text-[var(--color-muted)]">No workouts logged yet.</p>
           )}
         </div>
 
         {/* Macro chart */}
         <div className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl p-6">
           <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <Utensils className="w-5 h-5" /> Apport nutritionnel récent
+            <Utensils className="w-5 h-5" /> Recent Nutrition
           </h2>
           {recentMealDays.length > 0 ? (
             <ResponsiveContainer width="100%" height={240}>
@@ -90,13 +91,13 @@ export default function Dashboard() {
                 <YAxis tick={{ fill: "var(--color-muted)", fontSize: 11 }} />
                 <Tooltip contentStyle={{ background: "var(--color-card)", border: "1px solid var(--color-border)" }} />
                 <Legend />
-                <Bar dataKey="protein" stackId="a" fill="var(--color-accent)" name="Protéines" radius={[0, 0, 0, 0]} />
-                <Bar dataKey="carbs" stackId="a" fill="#82ca9d" name="Glucides" />
-                <Bar dataKey="fat" stackId="a" fill="#ffc658" name="Lipides" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="protein" stackId="a" fill="var(--color-accent)" name="Protein" radius={[0, 0, 0, 0]} />
+                <Bar dataKey="carbs" stackId="a" fill="#82ca9d" name="Carbs" />
+                <Bar dataKey="fat" stackId="a" fill="#ffc658" name="Fat" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <p className="text-sm text-[var(--color-muted)]">Aucun repas enregistré.</p>
+            <p className="text-sm text-[var(--color-muted)]">No meals logged yet.</p>
           )}
         </div>
       </div>
@@ -104,10 +105,10 @@ export default function Dashboard() {
       {/* Weekly summary */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { icon: <Activity className="w-6 h-6" />, title: "Entraînements", value: String(weekWorkouts.length), desc: "cette semaine" },
-          { icon: <BarChart2 className="w-6 h-6" />, title: "Calories brûlées", value: `${totalCaloriesBurned}`, desc: "kcal cette semaine" },
-          { icon: <Utensils className="w-6 h-6" />, title: "Moy. calorique", value: `${avgMealCalories}`, desc: "kcal par repas" },
-          { icon: <TrendingUp className="w-6 h-6" />, title: "Total séances", value: String(workouts.length), desc: "au total" },
+          { icon: <Activity className="w-6 h-6" />, title: "Workouts", value: String(weekWorkouts.length), desc: "this week" },
+          { icon: <BarChart2 className="w-6 h-6" />, title: "Calories burned", value: `${totalCaloriesBurned}`, desc: "kcal this week" },
+          { icon: <Utensils className="w-6 h-6" />, title: "Avg. meal", value: `${avgMealCalories}`, desc: "kcal per meal" },
+          { icon: <TrendingUp className="w-6 h-6" />, title: "Total sessions", value: String(workouts.length), desc: "all time" },
         ].map((s) => (
           <div key={s.title} className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl p-4">
             <div className="text-[var(--color-accent)] mb-2">{s.icon}</div>
@@ -117,6 +118,8 @@ export default function Dashboard() {
           </div>
         ))}
       </div>
+
+      <WeeklyReportCard />
     </div>
   );
 }

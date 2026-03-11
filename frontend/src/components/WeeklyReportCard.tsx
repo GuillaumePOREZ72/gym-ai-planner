@@ -1,0 +1,66 @@
+import { useState, useEffect } from "react";
+import { Sparkles, RefreshCw } from "lucide-react";
+import { getWeeklyReport, generateWeeklyReport } from "../lib/api";
+import type { WeeklyReport } from "../types";
+import { Button } from "./ui/Button";
+
+export default function WeeklyReportCard() {
+  const [report, setReport] = useState<WeeklyReport | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    getWeeklyReport().then(setReport).finally(() => setIsLoading(false));
+  }, []);
+
+  async function handleGenerate() {
+    setIsGenerating(true);
+    setError(null);
+    try {
+      const newReport = await generateWeeklyReport();
+      setReport(newReport);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to generate report. Please try again.");
+    } finally {
+      setIsGenerating(false);
+    }
+  }
+
+  return (
+    <div className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl p-6">
+      <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+        <Sparkles className="w-5 h-5 text-[var(--color-accent)]" />
+        Weekly Check-in
+      </h2>
+      {isLoading ? (
+        <p className="text-sm text-[var(--color-muted)]">Loading…</p>
+      ) : report ? (
+        <div className="space-y-4">
+          <p className="text-sm leading-relaxed">{report.reportText}</p>
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-[var(--color-muted)]">
+              Week of {report.weekStart} · Generated {new Date(report.updatedAt).toLocaleDateString("en-GB")}
+            </p>
+            <Button variant="ghost" onClick={handleGenerate} disabled={isGenerating} className="flex items-center gap-1.5 text-xs">
+              <RefreshCw className={`w-3.5 h-3.5 ${isGenerating ? "animate-spin" : ""}`} />
+              {isGenerating ? "Generating…" : "Regenerate"}
+            </Button>
+          </div>
+          {error && <p className="text-sm text-red-400">{error}</p>}
+        </div>
+      ) : (
+        <div className="space-y-3">
+          <p className="text-sm text-[var(--color-muted)]">
+            Get a personalized coaching recap of your week — workouts, nutrition, and one concrete tip for next week.
+          </p>
+          {error && <p className="text-sm text-red-400">{error}</p>}
+          <Button variant="outline" onClick={handleGenerate} disabled={isGenerating} className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4" />
+            {isGenerating ? "Generating…" : "Generate my weekly report"}
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
