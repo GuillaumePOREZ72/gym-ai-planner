@@ -1,10 +1,19 @@
 import { Router, Request, Response } from "express";
+import rateLimit from "express-rate-limit";
 import { prisma } from "../lib/prisma";
 import { generateTrainingPlan } from "../lib/ai";
 
 const router = Router();
 
-router.post("/generate", async (req: Request, res: Response) => {
+const aiLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  limit: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "AI plan generation limit reached. Try again in an hour." },
+});
+
+router.post("/generate", aiLimiter, async (req: Request, res: Response) => {
   const userId: string | undefined = (req as any).userId;
   if (!userId) {
     res.status(401).json({ error: "Unauthorized" });

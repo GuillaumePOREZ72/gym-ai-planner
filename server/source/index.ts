@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { createRemoteJWKSet, jwtVerify } from "jose";
@@ -10,6 +11,11 @@ import workoutsRouter from "./routes/workouts";
 import mealsRouter from "./routes/meals";
 
 const app = express();
+// trust proxy: false = Node is exposed directly (no Nginx/reverse proxy).
+// If a proxy is added in front, change to: app.set("trust proxy", 1)
+// and configure the proxy to set X-Forwarded-For correctly.
+// Without this, rate limiting would use proxy IP (rate-limit entire user base as one).
+app.set("trust proxy", false);
 const PORT = process.env.PORT || 3001;
 const NEON_AUTH_URL = process.env.NEON_AUTH_URL;
 
@@ -36,7 +42,17 @@ app.use(helmet({
   frameguard: { action: "deny" },
 }));
 
+// Global rate limit: 200 requests per 15 minutes per IP
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many requests, please try again later." },
+});
 app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:5173", credentials: true }));
+app.use(globalLimiter);
+
 app.use(express.json());
 app.use(cookieParser());
 
