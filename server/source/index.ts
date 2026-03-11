@@ -1,5 +1,8 @@
 import "dotenv/config";
 import express from "express";
+import fs from "fs";
+import http from "http";
+import https from "https";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import cors from "cors";
@@ -106,6 +109,34 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const certPath = process.env.TLS_CERT_PATH;
+const keyPath = process.env.TLS_KEY_PATH;
+
+if (certPath && keyPath) {
+  // Production: HTTPS mode
+  let credentials: { cert: Buffer; key: Buffer };
+  try {
+    credentials = { cert: fs.readFileSync(certPath), key: fs.readFileSync(keyPath) };
+  } catch (err) {
+    console.error("[fatal] Cannot read TLS certificate files:", (err as Error).message);
+    process.exit(1);
+  }
+  https.createServer(credentials, app).listen(PORT, () => {
+    console.log(`Server running on https://0.0.0.0:${PORT}`);
+  });
+
+  // HTTP → HTTPS redirect on port 80
+  const redirectApp = express();
+  redirectApp.use((_req, res) => {
+    const host = process.env.PUBLIC_DOMAIN ?? _req.headers.host;
+    res.redirect(301, `https://${host}${_req.url}`);
+  });
+  http.createServer(redirectApp).listen(80, () => {
+    console.log("HTTP → HTTPS redirect active on port 80");
+  });
+} else {
+  // Development: HTTP mode
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
