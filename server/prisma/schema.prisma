@@ -56,3 +56,10 @@ model Meal {
 
   @@index([userId])
 }
+
+model WeeklyReport {
+  userId     String   @id @db.Uuid
+  reportText String   @db.Text
+  weekStart  String   @db.VarChar(10)
+  createdAt  DateTime @default(now()) @updatedAt @db.Timestamp(6)
+}
