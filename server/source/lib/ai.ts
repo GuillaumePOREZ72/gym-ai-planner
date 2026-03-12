@@ -83,7 +83,7 @@ ${p.injuries ? "- Include an 'alternatives' array for exercises that may aggrava
 `.trim();
 
   const response = await client.chat.completions.create({
-    model: "liquid/lfm-2.5-1.2b-instruct:free",
+    model: "mistralai/mistral-7b-instruct:free",
     messages: [
       {
         role: "system",
@@ -117,7 +117,7 @@ export async function generateWorkoutInsight(workout: {
   calories: number;
 }): Promise<string> {
   const response = await client.chat.completions.create({
-    model: "liquid/lfm-2.5-1.2b-instruct:free",
+    model: "mistralai/mistral-7b-instruct:free",
     messages: [
       {
         role: "system",
@@ -146,7 +146,7 @@ export async function generateMealInsight(meal: {
   fat: number;
 }): Promise<string> {
   const response = await client.chat.completions.create({
-    model: "liquid/lfm-2.5-1.2b-instruct:free",
+    model: "mistralai/mistral-7b-instruct:free",
     messages: [
       {
         role: "system",
@@ -179,22 +179,45 @@ export async function generateWeeklyReport(params: {
   language?: string;
 }): Promise<string> {
   const { profile, workouts, mealDays, language = "en" } = params;
+  const isFr = language === "fr";
 
   // Cap to last 14 entries to avoid unbounded prompt length
   const cappedWorkouts = workouts.slice(-14);
   const cappedMeals = mealDays.slice(-14);
 
+  const noWorkoutsLabel = isFr ? "Aucune séance enregistrée cette semaine." : "No workouts logged this week.";
+  const noMealsLabel = isFr ? "Aucun repas enregistré cette semaine." : "No meals logged this week.";
+
   const workoutSummary =
     cappedWorkouts.length === 0
-      ? "No workouts logged this week."
+      ? noWorkoutsLabel
       : cappedWorkouts.map((w) => `- ${w.date}: ${w.type}, ${w.duration} min, ${w.calories} kcal`).join("\n");
 
   const mealSummary =
     cappedMeals.length === 0
-      ? "No meals logged this week."
+      ? noMealsLabel
       : cappedMeals.map((d) => `- ${d.date}: ${d.totalCalories} kcal, ${(d.totalProtein || 0).toFixed(1)}g protein`).join("\n");
 
-  const userPrompt = `
+  const langInstruction = isFr
+    ? "IMPORTANT: Tu dois absolument répondre en français."
+    : "IMPORTANT: You must respond in English.";
+
+  const userPrompt = isFr
+    ? `
+Profil de l'utilisateur :
+- Objectif : ${GoalMap[profile.goal] || profile.goal}
+- Expérience : ${ExpMap[profile.experience] || profile.experience}
+- Cible : ${profile.daysPerWeek} jours d'entraînement/semaine, ${profile.sessionLength} min/séance
+
+Séances cette semaine (${cappedWorkouts.length} enregistrées) :
+${workoutSummary}
+
+Nutrition cette semaine par jour (${cappedMeals.length} jours enregistrés) :
+${mealSummary}
+
+${langInstruction}
+`.trim()
+    : `
 User profile:
 - Goal: ${GoalMap[profile.goal] || profile.goal}
 - Experience: ${ExpMap[profile.experience] || profile.experience}
@@ -205,18 +228,18 @@ ${workoutSummary}
 
 This week's nutrition by day (${cappedMeals.length} days logged):
 ${mealSummary}
+
+${langInstruction}
 `.trim();
 
-  const langInstruction = language === "fr" ? "Write in French." : "Write in English.";
+  const systemContent = isFr
+    ? "Tu es un coach sportif concis et pragmatique. Tu rédiges un bilan hebdomadaire en français. Écris 3 à 5 phrases en prose simple. Mentionne ce qui s'est bien passé, ce qui peut être amélioré, et une recommandation concrète pour la semaine prochaine. Pas de markdown, pas de puces, pas de listes. Parle directement à l'utilisateur."
+    : "You are a concise, practical fitness coach writing a weekly check-in summary. Write in English. Write 3 to 5 sentences in plain prose. Mention what went well, what could be improved, and one concrete recommendation for next week. No markdown, no bullet points, no lists. Speak directly to the user.";
 
   const response = await client.chat.completions.create({
-    model: "liquid/lfm-2.5-1.2b-instruct:free",
+    model: "mistralai/mistral-7b-instruct:free",
     messages: [
-      {
-        role: "system",
-        content:
-          `You are a concise, practical fitness coach writing a weekly check-in summary. ${langInstruction} Write 3 to 5 sentences in plain prose. Mention what went well, what could be improved, and one concrete recommendation for next week. No markdown, no bullet points, no lists. Speak directly to the user.`,
-      },
+      { role: "system", content: systemContent },
       { role: "user", content: userPrompt },
     ],
   });
