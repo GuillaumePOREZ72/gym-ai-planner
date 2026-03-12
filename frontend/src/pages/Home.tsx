@@ -1,32 +1,19 @@
 import { Link } from "react-router-dom";
 import { Zap, Target, Calendar, ArrowRight, Sparkles, Clock } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "../components/ui/Button";
 import { Card } from "../components/ui/Card";
 
-const features = [
-  {
-    icon: Sparkles,
-    title: "AI-Powered Plans",
-    description: "Get a training program tailored to your goals, experience, and schedule.",
-  },
-  {
-    icon: Target,
-    title: "Goal-Oriented",
-    description: "Whether you want to build muscle, lose fat, or get stronger — we optimize for your goal.",
-  },
-  {
-    icon: Calendar,
-    title: "Flexible Scheduling",
-    description: "Plans that fit your lifestyle. Train 2 days or 6 — we adapt to you.",
-  },
-  {
-    icon: Clock,
-    title: "Time-Efficient",
-    description: "Every workout is designed to maximize results in your available time.",
-  },
-];
-
 export default function Home() {
+  const { t } = useTranslation("common");
+
+  const features = [
+    { key: "ai", icon: Sparkles, title: t("home.feature_aiTitle"), description: t("home.feature_aiDesc") },
+    { key: "goal", icon: Target, title: t("home.feature_goalTitle"), description: t("home.feature_goalDesc") },
+    { key: "schedule", icon: Calendar, title: t("home.feature_scheduleTitle"), description: t("home.feature_scheduleDesc") },
+    { key: "time", icon: Clock, title: t("home.feature_timeTitle"), description: t("home.feature_timeDesc") },
+  ];
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -37,30 +24,30 @@ export default function Home() {
         <div className="relative max-w-6xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--color-card)] border border-[var(--color-border)] mb-8">
             <Zap className="w-4 h-4 text-[var(--color-accent)]" />
-            <span className="text-sm text-[var(--color-muted)]">AI-powered training plans</span>
+            <span className="text-sm text-[var(--color-muted)]">{t("home.badge")}</span>
           </div>
 
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
-            Your Perfect
+            {t("home.heroTitle1")}
             <br />
-            <span className="text-[var(--color-accent)]">Gym Plan</span> in Seconds
+            <span className="text-[var(--color-accent)]">{t("home.heroAccent")}</span>{" "}
+            {t("home.heroTitle2")}
           </h1>
 
           <p className="text-xl text-[var(--color-muted)] max-w-2xl mx-auto mb-10">
-            Stop guessing. Get a personalized training program built by AI, tailored to your goals,
-            experience, and schedule.
+            {t("home.heroSubtitle")}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/onboarding">
               <Button size="lg" className="gap-2">
-                Get Started Free
+                {t("home.getStarted")}
                 <ArrowRight className="w-5 h-5" />
               </Button>
             </Link>
             <Link to="/auth/sign-in">
               <Button variant="outline" size="lg">
-                Sign In
+                {t("nav.signIn")}
               </Button>
             </Link>
           </div>
@@ -71,16 +58,16 @@ export default function Home() {
       <section className="py-20 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Why GymAI?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t("home.whyTitle")}</h2>
             <p className="text-[var(--color-muted)] text-lg max-w-2xl mx-auto">
-              We combine fitness expertise with AI to create programs that actually work for you.
+              {t("home.whySubtitle")}
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feature) => (
               <Card
-                key={feature.title}
+                key={feature.key}
                 variant="outline"
                 className="group p-6 hover:border-[var(--color-accent)]/50 transition-colors"
               >
