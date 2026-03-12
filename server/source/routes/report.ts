@@ -72,6 +72,8 @@ router.post("/weekly", reportLimiter, async (req: Request, res: Response, next: 
     );
     const mealDays = Object.entries(mealsByDay).map(([date, v]) => ({ date, ...v }));
 
+    const lang = typeof req.body?.lang === "string" && req.body.lang === "fr" ? "fr" : "en";
+
     const reportText = await generateWeeklyReport({
       profile: {
         goal: profile.goal,
@@ -81,6 +83,7 @@ router.post("/weekly", reportLimiter, async (req: Request, res: Response, next: 
       },
       workouts,
       mealDays,
+      language: lang,
     });
 
     const report = await prisma.weeklyReport.upsert({

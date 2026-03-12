@@ -176,8 +176,9 @@ export async function generateWeeklyReport(params: {
   };
   workouts: Array<{ date: string; type: string; duration: number; calories: number }>;
   mealDays: Array<{ date: string; totalCalories: number; totalProtein: number }>;
+  language?: string;
 }): Promise<string> {
-  const { profile, workouts, mealDays } = params;
+  const { profile, workouts, mealDays, language = "en" } = params;
 
   // Cap to last 14 entries to avoid unbounded prompt length
   const cappedWorkouts = workouts.slice(-14);
@@ -206,13 +207,15 @@ This week's nutrition by day (${cappedMeals.length} days logged):
 ${mealSummary}
 `.trim();
 
+  const langInstruction = language === "fr" ? "Write in French." : "Write in English.";
+
   const response = await client.chat.completions.create({
     model: "liquid/lfm-2.5-1.2b-instruct:free",
     messages: [
       {
         role: "system",
         content:
-          "You are a concise, practical fitness coach writing a weekly check-in summary. Write 3 to 5 sentences in plain English. Mention what went well, what could be improved, and one concrete recommendation for next week. No markdown, no bullet points, no lists. Speak directly to the user.",
+          `You are a concise, practical fitness coach writing a weekly check-in summary. ${langInstruction} Write 3 to 5 sentences in plain prose. Mention what went well, what could be improved, and one concrete recommendation for next week. No markdown, no bullet points, no lists. Speak directly to the user.`,
       },
       { role: "user", content: userPrompt },
     ],

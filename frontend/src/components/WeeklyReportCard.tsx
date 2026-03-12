@@ -6,7 +6,7 @@ import type { WeeklyReport } from "../types";
 import { Button } from "./ui/Button";
 
 export default function WeeklyReportCard() {
-  const { t } = useTranslation("common");
+  const { t, i18n } = useTranslation("common");
   const [report, setReport] = useState<WeeklyReport | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -24,7 +24,7 @@ export default function WeeklyReportCard() {
     setIsGenerating(true);
     setError(null);
     try {
-      const newReport = await generateWeeklyReport();
+      const newReport = await generateWeeklyReport(i18n.language);
       setReport(newReport);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to generate report. Please try again.");

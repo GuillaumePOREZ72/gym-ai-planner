@@ -124,7 +124,10 @@ export async function getWeeklyReport(): Promise<WeeklyReport | null> {
   }
 }
 
-export async function generateWeeklyReport(): Promise<WeeklyReport> {
-  const result = await apiFetch<{ report: WeeklyReport }>("/api/report/weekly", { method: "POST" });
+export async function generateWeeklyReport(lang: string = "en"): Promise<WeeklyReport> {
+  const result = await apiFetch<{ report: WeeklyReport }>("/api/report/weekly", {
+    method: "POST",
+    body: JSON.stringify({ lang }),
+  });
   return result.report;
 }
