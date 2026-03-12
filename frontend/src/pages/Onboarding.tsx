@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { RedirectToSignIn, SignedIn } from "@neondatabase/neon-js/auth/react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import { Card } from "../components/ui/Card";
 import { Select } from "../components/ui/Select";
@@ -8,62 +9,8 @@ import { Button } from "../components/ui/Button";
 import { Textarea } from "../components/ui/Textarea";
 import { saveProfile, generatePlan } from "../lib/api";
 
-const goalOptions = [
-  { value: "bulk", label: "Build Muscle (Bulk)" },
-  { value: "cut", label: "Get Lean (Cut)" },
-  { value: "recomp", label: "Body Recomposition" },
-  { value: "strength", label: "Build Strength" },
-  { value: "endurance", label: "Improve Endurance" },
-];
-
-const experienceOptions = [
-  { value: "beginner", label: "Beginner (0-1 year)" },
-  { value: "intermediate", label: "Intermediate (1-3 years)" },
-  { value: "advanced", label: "Advanced (3+ years)" },
-];
-
-const daysOptions = [
-  { value: "1", label: "1 day/week" },
-  { value: "2", label: "2 days/week" },
-  { value: "3", label: "3 days/week" },
-  { value: "4", label: "4 days/week" },
-  { value: "5", label: "5 days/week" },
-  { value: "6", label: "6 days/week" },
-];
-
-const sessionOptions = [
-  { value: "30", label: "30 minutes" },
-  { value: "45", label: "45 minutes" },
-  { value: "60", label: "60 minutes" },
-  { value: "75", label: "75 minutes" },
-  { value: "90", label: "90 minutes" },
-];
-
-const equipmentOptions = [
-  { value: "full_gym", label: "Full Gym Access" },
-  { value: "home", label: "Home Gym" },
-  { value: "dumbbells", label: "Dumbbells Only" },
-];
-
-const splitOptions = [
-  { value: "full", label: "Full Body" },
-  { value: "upper_lower", label: "Upper/Lower" },
-  { value: "push_pull", label: "Push/Pull" },
-  { value: "chest_back", label: "Chest/Back" },
-  { value: "legs_arms", label: "Legs/Arms" },
-];
-
-const injuriesOptions = [
-  { value: "", label: "None" },
-  { value: "knee", label: "Knee pain" },
-  { value: "back", label: "Lower back pain" },
-  { value: "shoulder", label: "Shoulder issues" },
-  { value: "wrist", label: "Wrist pain" },
-  { value: "hip", label: "Hip pain" },
-  { value: "ankle", label: "Ankle issues" },
-];
-
 export default function Onboarding() {
+  const { t } = useTranslation("common");
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -77,6 +24,61 @@ export default function Onboarding() {
     injuries: "",
     preferredSplit: "upper_lower",
   });
+
+  const goalOptions = [
+    { value: "bulk", label: t("onboarding.goal_bulk") },
+    { value: "cut", label: t("onboarding.goal_cut") },
+    { value: "recomp", label: t("onboarding.goal_recomp") },
+    { value: "strength", label: t("onboarding.goal_strength") },
+    { value: "endurance", label: t("onboarding.goal_endurance") },
+  ];
+
+  const experienceOptions = [
+    { value: "beginner", label: t("onboarding.exp_beginner") },
+    { value: "intermediate", label: t("onboarding.exp_intermediate") },
+    { value: "advanced", label: t("onboarding.exp_advanced") },
+  ];
+
+  const daysOptions = [
+    { value: "1", label: t("onboarding.days_1") },
+    { value: "2", label: t("onboarding.days_2") },
+    { value: "3", label: t("onboarding.days_3") },
+    { value: "4", label: t("onboarding.days_4") },
+    { value: "5", label: t("onboarding.days_5") },
+    { value: "6", label: t("onboarding.days_6") },
+  ];
+
+  const sessionOptions = [
+    { value: "30", label: t("onboarding.session_30") },
+    { value: "45", label: t("onboarding.session_45") },
+    { value: "60", label: t("onboarding.session_60") },
+    { value: "75", label: t("onboarding.session_75") },
+    { value: "90", label: t("onboarding.session_90") },
+  ];
+
+  const equipmentOptions = [
+    { value: "full_gym", label: t("onboarding.equip_fullGym") },
+    { value: "home", label: t("onboarding.equip_home") },
+    { value: "dumbbells", label: t("onboarding.equip_dumbbells") },
+  ];
+
+  const splitOptions = [
+    { value: "full", label: t("onboarding.split_full") },
+    { value: "upper_lower", label: t("onboarding.split_upperLower") },
+    { value: "push_pull", label: t("onboarding.split_pushPull") },
+    { value: "chest_back", label: t("onboarding.split_chestBack") },
+    { value: "legs_arms", label: t("onboarding.split_legsArms") },
+  ];
+
+  const injuriesOptions = [
+    { value: "", label: t("onboarding.injury_none") },
+    { value: "knee", label: t("onboarding.injury_knee") },
+    { value: "back", label: t("onboarding.injury_back") },
+    { value: "shoulder", label: t("onboarding.injury_shoulder") },
+    { value: "wrist", label: t("onboarding.injury_wrist") },
+    { value: "hip", label: t("onboarding.injury_hip") },
+    { value: "ankle", label: t("onboarding.injury_ankle") },
+  ];
 
   function updateForm(field: string, value: string) {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -108,21 +110,21 @@ export default function Onboarding() {
 
           {/* Step 1: Questionnaire*/}
           <Card variant="default" className="p-6">
-            <h1 className="text-2xl font-bold mb-2">Let's get to know you</h1>
+            <h1 className="text-2xl font-bold mb-2">{t("onboarding.title")}</h1>
             <p className="text-[var(--color-muted)] mb-6">
-              Help us create the perfect plan for you.
+              {t("onboarding.subtitle")}
             </p>
             <form className="space-y-5" onSubmit={handleSubmit}>
               <Select
                 id="goal"
-                label="What's your primary goal?"
+                label={t("onboarding.goalLabel")}
                 options={goalOptions}
                 value={formData.goal}
                 onChange={(e) => updateForm("goal", e.target.value)}
               />
               <Select
                 id="experience"
-                label="How experienced are you?"
+                label={t("onboarding.experienceLabel")}
                 options={experienceOptions}
                 value={formData.experience}
                 onChange={(e) => updateForm("experience", e.target.value)}
@@ -130,14 +132,14 @@ export default function Onboarding() {
               <div className="grid grid-cols-2 gap-4">
                 <Select
                   id="daysPerWeek"
-                  label="How many days per week can you train?"
+                  label={t("onboarding.daysLabel")}
                   options={daysOptions}
                   value={formData.daysPerWeek}
                   onChange={(e) => updateForm("daysPerWeek", e.target.value)}
                 />
                 <Select
                   id="sessionLength"
-                  label="How long do you want your sessions to be?"
+                  label={t("onboarding.sessionLabel")}
                   options={sessionOptions}
                   value={formData.sessionLength}
                   onChange={(e) => updateForm("sessionLength", e.target.value)}
@@ -145,21 +147,21 @@ export default function Onboarding() {
               </div>
               <Select
                 id="equipment"
-                label="What equipment do you have access to?"
+                label={t("onboarding.equipmentLabel")}
                 options={equipmentOptions}
                 value={formData.equipment}
                 onChange={(e) => updateForm("equipment", e.target.value)}
               />
               <Select
                 id="preferredSplit"
-                label="What split do you prefer?"
+                label={t("onboarding.splitLabel")}
                 options={splitOptions}
                 value={formData.preferredSplit}
                 onChange={(e) => updateForm("preferredSplit", e.target.value)}
               />
               <Select
                 id="injuries"
-                label="Do you have any injuries or limitations?"
+                label={t("onboarding.injuriesLabel")}
                 options={injuriesOptions}
                 value={formData.injuries}
                 onChange={(e) => updateForm("injuries", e.target.value)}
@@ -167,8 +169,8 @@ export default function Onboarding() {
               {formData.injuries && (
                 <Textarea
                   id="injuriesDetail"
-                  label="Describe your injury (optional)"
-                  placeholder="e.g. right knee pain when squatting"
+                  label={t("onboarding.injuriesDetailLabel")}
+                  placeholder={t("onboarding.injuriesDetailPlaceholder")}
                   value={formData.injuries}
                   onChange={(e) => updateForm("injuries", e.target.value)}
                 />
@@ -185,7 +187,7 @@ export default function Onboarding() {
                 isLoading={isSubmitting}
                 className="w-full"
               >
-                {isSubmitting ? "Generating your plan…" : "Generate My Plan"}
+                {isSubmitting ? t("onboarding.generatingBtn") : t("onboarding.generateBtn")}
               </Button>
             </form>
           </Card>
