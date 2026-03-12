@@ -1,4 +1,5 @@
 import { Info } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { Exercise } from "../../types";
 
 interface ExerciseRowProps {
@@ -14,6 +15,7 @@ function getRpeBadgeClass(rpe: number): string {
 }
 
 export function ExerciseRow({ exercise, index, showAlternatives = false }: ExerciseRowProps) {
+  const { t } = useTranslation("common");
   return (
     <div className="py-3 border-b border-[var(--color-border)] last:border-0">
       <div className="flex items-start justify-between gap-4">
@@ -43,7 +45,7 @@ export function ExerciseRow({ exercise, index, showAlternatives = false }: Exerc
 
       {showAlternatives && exercise.alternatives && exercise.alternatives.length > 0 && (
         <div className="mt-2 ml-9">
-          <p className="text-xs text-[var(--color-muted)] mb-1">Alternatives:</p>
+          <p className="text-xs text-[var(--color-muted)] mb-1">{t("plan.alternatives")}</p>
           <div className="flex flex-wrap gap-1.5">
             {exercise.alternatives.map((alt) => (
               <span

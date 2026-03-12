@@ -1,4 +1,5 @@
 import { Loader2, RefreshCw } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
 import { Button } from "../ui/Button";
 import { ExerciseRow } from "./ExerciseRow";
@@ -17,6 +18,7 @@ export function PlanDisplay({
   isRegenerating = false,
   onRegenerate,
 }: PlanDisplayProps) {
+  const { t } = useTranslation("common");
   const { overview, weeklySchedule, progression } = plan.planJson;
 
   return (
@@ -25,7 +27,7 @@ export function PlanDisplay({
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-xs text-[var(--color-muted)] uppercase tracking-wider mb-1">
-            Training Plan · v{plan.version}
+            {t("plan.trainingPlanLabel", { version: plan.version })}
           </p>
           <p className="text-[var(--color-muted)] text-sm max-w-xl">
             {overview}
@@ -44,7 +46,7 @@ export function PlanDisplay({
             ) : (
               <RefreshCw size={14} className="mr-1.5" />
             )}
-            Regenerate
+            {t("plan.regenerate")}
           </Button>
         )}
       </div>
@@ -85,7 +87,7 @@ export function PlanDisplay({
           <div className="absolute top-0 left-0 w-1 h-full bg-[var(--color-accent)]" />
           <div className="p-6 sm:p-8">
             <h4 className="text-xs font-semibold text-[var(--color-accent)] uppercase tracking-widest mb-3">
-              Progression Guidance
+              {t("plan.progressionGuidance")}
             </h4>
             <p className="text-[var(--color-foreground)] leading-relaxed">
               {progression}
