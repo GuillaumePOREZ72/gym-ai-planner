@@ -57,25 +57,25 @@ export default function Fitness() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
-      <h1 className="text-3xl font-bold">Suivi Fitness</h1>
+      <h1 className="text-3xl font-bold">Fitness Tracker</h1>
 
       {/* Add workout form */}
       <div className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl p-6">
         <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-          <PlusCircle className="w-5 h-5" /> Ajouter un entraînement
+          <PlusCircle className="w-5 h-5" /> Add a Workout
         </h2>
         <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
           <input name="date" type="date" value={form.date} onChange={handleChange} required
             className="col-span-1 px-3 py-2 rounded-lg bg-[var(--color-background)] border border-[var(--color-border)] text-[var(--color-foreground)] focus:outline-none focus:border-[var(--color-accent)]" />
-          <input name="type" type="text" placeholder="Type d'entraînement" value={form.type} onChange={handleChange} required
+          <input name="type" type="text" placeholder="Workout type" value={form.type} onChange={handleChange} required
             className="col-span-1 px-3 py-2 rounded-lg bg-[var(--color-background)] border border-[var(--color-border)] text-[var(--color-foreground)] focus:outline-none focus:border-[var(--color-accent)]" />
-          <input name="duration" type="number" min="1" placeholder="Durée (minutes)" value={form.duration} onChange={handleChange} required
+          <input name="duration" type="number" min="1" placeholder="Duration (minutes)" value={form.duration} onChange={handleChange} required
             className="col-span-1 px-3 py-2 rounded-lg bg-[var(--color-background)] border border-[var(--color-border)] text-[var(--color-foreground)] focus:outline-none focus:border-[var(--color-accent)]" />
-          <input name="calories" type="number" min="1" placeholder="Calories brûlées" value={form.calories} onChange={handleChange} required
+          <input name="calories" type="number" min="1" placeholder="Calories burned" value={form.calories} onChange={handleChange} required
             className="col-span-1 px-3 py-2 rounded-lg bg-[var(--color-background)] border border-[var(--color-border)] text-[var(--color-foreground)] focus:outline-none focus:border-[var(--color-accent)]" />
           <button type="submit" disabled={isSubmitting}
             className="col-span-2 py-2 rounded-lg bg-[var(--color-accent)] text-black font-semibold hover:bg-[var(--color-accent-hover)] transition-colors disabled:opacity-50">
-            {isSubmitting ? "Enregistrement…" : "Ajouter l'entraînement"}
+            {isSubmitting ? "Saving…" : "Add Workout"}
           </button>
         </form>
         {error && <p className="mt-3 text-sm text-red-500">{error}</p>}
@@ -90,7 +90,7 @@ export default function Fitness() {
       {/* History table */}
       <div className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl p-6">
         <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-          <Dumbbell className="w-5 h-5" /> Historique
+          <Dumbbell className="w-5 h-5" /> History
         </h2>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
@@ -98,7 +98,7 @@ export default function Fitness() {
               <tr className="border-b border-[var(--color-border)] text-[var(--color-muted)]">
                 <th className="pb-2 pr-4">Date</th>
                 <th className="pb-2 pr-4">Type</th>
-                <th className="pb-2 pr-4">Durée</th>
+                <th className="pb-2 pr-4">Duration</th>
                 <th className="pb-2 pr-4">Calories</th>
                 <th className="pb-2"></th>
               </tr>
@@ -111,7 +111,7 @@ export default function Fitness() {
                   <td className="py-2 pr-4">{w.duration} min</td>
                   <td className="py-2 pr-4">{w.calories} kcal</td>
                   <td className="py-2">
-                    <button onClick={() => handleDelete(w.id)} aria-label="Supprimer"
+                    <button onClick={() => handleDelete(w.id)} aria-label="Delete"
                       className="text-[var(--color-muted)] hover:text-red-500 transition-colors">
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -119,7 +119,7 @@ export default function Fitness() {
                 </tr>
               ))}
               {workouts.length === 0 && (
-                <tr><td colSpan={5} className="py-4 text-center text-[var(--color-muted)]">Aucun entraînement enregistré.</td></tr>
+                <tr><td colSpan={5} className="py-4 text-center text-[var(--color-muted)]">No workouts logged yet.</td></tr>
               )}
             </tbody>
           </table>
@@ -130,7 +130,7 @@ export default function Fitness() {
       {workouts.length > 0 && (
         <div className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl p-6">
           <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <TrendingUp className="w-5 h-5" /> Progression
+            <TrendingUp className="w-5 h-5" /> Progress
           </h2>
           <ResponsiveContainer width="100%" height={280}>
             <LineChart data={[...workouts].reverse()}>
@@ -140,7 +140,7 @@ export default function Fitness() {
               <YAxis yAxisId="right" orientation="right" tick={{ fill: "var(--color-muted)", fontSize: 12 }} />
               <Tooltip contentStyle={{ background: "var(--color-card)", border: "1px solid var(--color-border)" }} />
               <Legend />
-              <Line yAxisId="left" type="monotone" dataKey="duration" stroke="var(--color-accent)" name="Durée (min)" dot={false} />
+              <Line yAxisId="left" type="monotone" dataKey="duration" stroke="var(--color-accent)" name="Duration (min)" dot={false} />
               <Line yAxisId="right" type="monotone" dataKey="calories" stroke="#82ca9d" name="Calories" dot={false} />
             </LineChart>
           </ResponsiveContainer>
@@ -150,11 +150,11 @@ export default function Fitness() {
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl p-5">
-          <p className="text-sm text-[var(--color-muted)]">Total séances</p>
+          <p className="text-sm text-[var(--color-muted)]">Total sessions</p>
           <p className="text-3xl font-bold mt-1">{workouts.length}</p>
         </div>
         <div className="bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl p-5">
-          <p className="text-sm text-[var(--color-muted)]">Calories brûlées</p>
+          <p className="text-sm text-[var(--color-muted)]">Calories burned</p>
           <p className="text-3xl font-bold mt-1 text-[var(--color-accent)]">{total.calories} kcal</p>
         </div>
       </div>

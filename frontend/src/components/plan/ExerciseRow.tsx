@@ -43,7 +43,7 @@ export function ExerciseRow({ exercise, index, showAlternatives = false }: Exerc
 
       {showAlternatives && exercise.alternatives && exercise.alternatives.length > 0 && (
         <div className="mt-2 ml-9">
-          <p className="text-xs text-[var(--color-muted)] mb-1">Alternatives :</p>
+          <p className="text-xs text-[var(--color-muted)] mb-1">Alternatives:</p>
           <div className="flex flex-wrap gap-1.5">
             {exercise.alternatives.map((alt) => (
               <span
