@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import { PlanDisplay } from "../components/plan/PlanDisplay";
 import { generatePlan } from "../lib/api";
@@ -8,6 +9,7 @@ import { Avatar } from "../components/ui/Avatar";
 export default function Profile() {
   const { user, profile, plan, isLoading, refreshData } = useAuth();
   const [isRegenerating, setIsRegenerating] = useState(false);
+  const { t } = useTranslation("common");
 
   if (isLoading) {
     return (
@@ -42,13 +44,13 @@ export default function Profile() {
           <Avatar seed={user.id} size={80} label={user.email} />
           <div>
             <p className="text-lg font-semibold text-[var(--color-foreground)]">{user.email}</p>
-            <p className="text-sm text-[var(--color-muted)]">Member since {memberSince}</p>
+            <p className="text-sm text-[var(--color-muted)]">{t("profile.memberSince", { date: memberSince })}</p>
           </div>
         </div>
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-[var(--color-foreground)]">Your Training Plan</h1>
+          <h1 className="text-3xl font-bold text-[var(--color-foreground)]">{t("profile.trainingPlan")}</h1>
           <p className="text-[var(--color-muted)] mt-1 text-sm">
-            Based on your profile — {profile?.daysPerWeek} days/week · {profile?.sessionLength} min sessions
+            {t("profile.planSubtitle", { days: profile?.daysPerWeek, session: profile?.sessionLength })}
           </p>
         </div>
         <PlanDisplay
