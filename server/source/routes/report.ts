@@ -10,7 +10,8 @@ const reportLimiter = rateLimit({
   limit: 3,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req: Request) => req.userId ?? req.ip ?? "unknown",
+  keyGenerator: (req: Request) => req.userId ?? "anonymous",
+
   message: { error: "Weekly report generation limit reached. Try again in an hour." },
 });
 
